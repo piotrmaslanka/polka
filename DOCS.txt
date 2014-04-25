@@ -1,0 +1,27 @@
+= Podstawowe terminy =
+
+    Szereg (lub szereg czasowy) to podstawowa jednostka danych w systemie bazodanowym Zero. Składa się on z uporządkowanych, rosnąco, par (tzw. wpisów) pieczątka czasowa - dane. Danymi jest ciąg bajtów o stałej (na szereg) długości.  
+    Głowa szeregu - para o największym znaczniku czasu spośród wszystkich danych w szeregu. Niemożliwe jest dopisanie do szeregu pary o takiej samej lub mniejszym znaczniku czasu jak głowa.
+
+= O LFD trochę =
+
+    LFD, czyli Local Filesystem Driver to ogólna nazwa pewnego backendu przechowującego dane. Ze względów organizacyjnych, takich jak:
+
+* Rozszerzalność systemu
+* Rozprzęgnięcie rdzenia systemu od sposobu przechowywania danych
+
+    zdecydowano się na implementację modułów LFD jako interfejsów języka Java. Oznacza to, że od tych modułów oczekuje się tylko dostarczenia pewnej funkcjonalności, nie wchodząc w szczegóły co do tego w jaki sposób zostaną one wykonane, zaś LFD mogą być zmieniane bez konieczności poprawiania innych części systemu.
+    Konkretny rodzaj modułu nazwiemy _LFD_. Pewne miejsce w którym "zainstalowany" jest jakiś system przechowywania danych - określony przez LFD - nazwiemy _storage_. Dla LFD konkretne storage identyfikowane jest przez pewien ciąg znaków - może być to ścieżka do katalogu jeśli LFD zapisuje dane bezpośrednio w systemie plików, albo ciąg znaków sterownika JDBC jeśli korzystamy z relacyjnej bazy danych. 
+    Zainicjowany w danym storage LFD pozwala nam na tworzenie nowych szeregów, kasowanie ich oraz dopisywanie nowych danych do istniejącego szeregu. Szeregi w ramach danego storage identyfikowane są przez ciąg znaków - jaki to ciąg, zależy już od danego LFD (LFD umożliwia sprawdzenie czy nazwa jest poprawna).
+    Interfejsy LFD w szczególności są skonstruowane w taki sposób aby móc obsłużyć dane o wielkości nawet kilkukrotnie przekraczającej rozmiar pamięci operacyjnej i przestrzeni adresowej (chociażby poprzez odczyt przez bufory). LFD dysponują też funkcjonalnością pozwalającą zapewnić synchronizację - a zwłaszcza zapewnienie że dane zostały zapisane na dyski. Mają obowiązek być skonstruowane w sposób minimalizujący wpływ awarii węzła na przechowywane dane.
+
+== LFD SUZIE ==
+    ''SUZIE'' jest LFD korzystającym z systemu plików. Opiera się na dwóch podstawowych zasadach:
+
+* Minimalizm formy przechowywania - w pliku zapisywany jest tylko timestamp i dane, jako ciąg tychże
+* Przeszukiwanie binarne jako sposób lokalizacji danych
+
+    Szereg czasowy w SUZIE w całości znajduje się w jednym katalogu - znajdują się tam metadane (np. aktualna głowa szeregu czy różne opcje zapisu) jak i pliki z danymi. SUZIE podczas zapisu automatycznie dba o dzielenie danych na pliki (albo automatycznie, albo zgodnie z wcześniej wspomnianymi opcjami.
+    Naturalnie, jak każdy LFD, SUZIE ma spełnić pewne gwarancje bezpieczeństwa. Jednym ze sposobów w jaki to uczyniono było potraktowanie głowy szeregu. Na początku implementacji stwierdzono że aktualna głowa szeregu będzie znajdować się w postaci tekstowej w osobnym pliku. Jednak podczas modelowania sytuacji awarii stwierdzono, że możliwe byłoby aby dane były zapisane przed aktualizacją metadanych - tak więc możliwa byłaby sytuacja gdy metadane byłyby fałszywe, gdyż obecne byłyby dane o większym znaczniku czasu niż to wynika z metadanych.
+    Tak więc usunięto tą metadaną, zaś przy ładowaniu szeregu głowa jest odczytywana z ostatniego wpisu w najnowszym pliku. W ten sposób jest ona zawsze aktualna oraz usunięto niepotrzebną duplikację danych. W aktualnej formie metadane są tylko do odczytu.
+    Aby zapewnić zadowalającą prędkość, operacje I/O wykonywane są przy pomocy bieżących standardów i wytycznych dotyczących interfejsu Java NIO.

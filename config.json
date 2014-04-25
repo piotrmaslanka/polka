@@ -1,0 +1,13 @@
+{
+	"bootstrap_node_ip": "10.0.0.100",
+	"bootstrap_node_port": 20,
+	
+	"node_ip": "10.0.0.12",
+	"node_port": 20,
+	
+	"nodehash": 9223372036854775807 ,
+	
+	"seriesdata_path": "D:\\zero\\data", 	
+	"seriesmeta_path": "D:\\zero\\meta",
+	"seriesdata_repair_path": "D:\\zero\\partials"
+}
