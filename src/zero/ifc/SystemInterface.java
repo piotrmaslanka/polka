@@ -9,6 +9,19 @@ import zero.store.SeriesDefinition;
  * Consumer's don't care if this is a network face or a local node interface
  */
 public interface SystemInterface {
+	
+	/**
+	 * Change a definition of a given series.
+	 * Supplants current definition with this new definition. It will happen only
+	 * if generation numbering is right (new gen is larger than current node's gen).
+	 * 
+	 * This will block until update hits the DB.
+	 * 
+	 * @param sd SeriesDefinition
+	 * @throws LinkBrokenException link to this interface was broken, attempt to reestablish it anew
+	 */
+	public void updateDefinition(SeriesDefinition sd) throws LinkBrokenException, IOException;
+	
 	/**
 	 * Obtains a definition of a given series
 	 * @param name name of the series

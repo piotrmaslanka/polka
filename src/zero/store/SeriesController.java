@@ -1,5 +1,6 @@
 package zero.store;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -16,13 +17,32 @@ import zero.startup.ConfigManager;
  * This represents a single series existing in the system, both the data and recovery aspect
  *
  */
-public class SeriesController {
+public class SeriesController implements Closeable {
 	
 	protected SeriesDefinition series;	// contains info about the series
 	private WriteAheadContext wacon;
-	private LFDSeries primary_storage;			// primary storage
-	protected boolean open = true;
-		
+	private LFDSeries primary_storage;			// primary storage	
+	
+	/**
+	 * Returns operational head timestamp.
+	 * 
+	 * This is the timestamp up to which registered data
+	 * is contiguous.
+	 *
+	 * @return operational head timestamp
+	 */
+	public long getHeadTimestamp() {
+		return this.primary_storage.getHeadTimestamp();
+	}
+	
+	/**
+	 * Returns a series definition for underlying series
+	 * @return series definition for this one
+	 */
+	public SeriesDefinition getSeriesDefinition() {
+		return this.series;
+	}
+	
 	/**
 	 * Creates a SeriesController for given series
 	 * @param name name of the series
@@ -83,19 +103,28 @@ public class SeriesController {
 	}
 	
 	/**
+	 * Signals that this SeriesController is no longer used by the one that 
+	 * got it from SeriesDB 
+	 */
+	@Override
+	public void close() throws IOException {
+		SeriesDB.getInstance().onSeriesControllerClosed(this);		
+	}
+	
+	/**
 	 * Closes the controller
+	 * 
+	 * Called by SeriesDB when it wants to close the controller
+	 * 
 	 * @throws IllegalStateException not all result sets were closed
 	 */
-	public void close() throws IOException, IllegalStateException {
+	protected void physicalClose() throws IOException, IllegalStateException {
 		try {
 			this.primary_storage.close();
 		} catch (LFDOpenedException e) {
 			throw new IllegalStateException();
 		}
 		this.wacon.close();
-		
-		SeriesDB.getInstance().onSeriesControllerClosed(this);
-		this.open = false;
 	}
 	
 	/**
@@ -103,7 +132,6 @@ public class SeriesController {
 	 * Controller must be closed.
 	 */
 	protected void deleteStorages() throws IOException {
-		if (this.open) throw new RuntimeException("Controller not closed");
 		try {
 			ConfigManager.get().storage.deleteSeries(this.series.seriesName);
 		} catch (LFDNotFoundException | LFDOpenedException e) {

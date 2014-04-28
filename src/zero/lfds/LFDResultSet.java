@@ -1,5 +1,6 @@
 package zero.lfds;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -9,7 +10,7 @@ import java.nio.ByteBuffer;
  * 
  * If it a class so that not all data is loaded into memory at once
  */
-public interface LFDResultSet {
+public interface LFDResultSet extends Closeable {
 
 	/**
 	 * Returns starting query position
