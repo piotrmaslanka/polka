@@ -48,8 +48,6 @@ public class LocalInterface implements SystemInterface {
 		}
 		try {
 			return sc.getHeadTimestamp();
-		} catch (IllegalArgumentException e) {
-			throw e;
 		} finally {
 			sc.close();
 		}

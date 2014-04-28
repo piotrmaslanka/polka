@@ -1,6 +1,5 @@
 package zero.store;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -8,8 +7,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 import zero.lfds.LFDAlreadyExistsException;
 import zero.lfds.LFDDamagedException;

@@ -1,20 +1,12 @@
 package zero.store;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import zero.lfds.LFDAlreadyExistsException;
-import zero.startup.ConfigManager;
 
 /**
  * A complex manager of all series.

@@ -27,7 +27,7 @@ public class SeriesController implements Closeable {
 	 * Returns operational head timestamp.
 	 * 
 	 * This is the timestamp up to which registered data
-	 * is contiguous.
+	 * is contiguous. -1 if empty.
 	 *
 	 * @return operational head timestamp
 	 */

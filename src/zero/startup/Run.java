@@ -1,8 +1,6 @@
 package zero.startup;
 
 import java.io.IOException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import zero.gossip.GossipOutbound;
 import zero.gossip.GossipThread;
