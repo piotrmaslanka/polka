@@ -9,7 +9,7 @@ package zero.util;
  */
 abstract public class WorkUnit {
 	
-	public abstract void run();
+	public abstract void run() throws Exception;
 	
 	public void executeAsThread() {
 		WorkUnit.executeAsThread(this);
@@ -20,7 +20,11 @@ abstract public class WorkUnit {
 				new Runnable() {
 					@Override
 					public void run() {
-						u.run();
+						try {
+							u.run();
+						} catch (Exception exc) {
+							
+						}
 					}
 				}).start();
 	}

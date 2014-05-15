@@ -27,7 +27,7 @@ public class H {
 			md.update(name.getBytes(Charset.forName("UTF-8")));
 			byte[] digest = md.digest();
 			
-			ByteBuffer bb = ByteBuffer.allocate(8);
+			ByteBuffer bb = ByteBuffer.allocate(digest.length);
 			bb.put(digest);
 			bb.flip();
 			return bb.getLong();

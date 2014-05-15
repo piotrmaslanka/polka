@@ -35,6 +35,11 @@ public class NodeDB implements Cloneable {
 		 * UNIX timestamp at which this data was valid
 		 */
 		public long timestamp;
+		
+		/**
+		 * Whether this entry represents a local node
+		 */
+		public transient boolean isLocal = false;
 	}
 
 	/**
@@ -48,12 +53,16 @@ public class NodeDB implements Cloneable {
 	 * MAY call GossipThread's replicateNodeInfo() during execution
 	 */
 	public void update(NodeInfo[] adv) { synchronized (this.nodedb) {
+		long myhash = ConfigManager.get().nodehash;
+		
 		for (NodeInfo n : adv) {
 			NodeInfo ni = this.nodedb.get(n.nodehash);
 			if (ni != null)	// it does exist
 				if (ni.timestamp >= n.timestamp)	// does not supersede this information
 					continue;
 
+			
+			if (n.nodehash == myhash) n.isLocal = true;
 			// all other cases require an update
 			this.nodedb.put(n.nodehash, n);
 			GossipThread.getInstance().replicateNodeInfo(n);
@@ -74,7 +83,7 @@ public class NodeDB implements Cloneable {
 			int i = 0;
 			
 			for (NodeInfo n : this.nodedb.values())
-				if (n.nodehash != myhash)
+				if (!n.isLocal)
 					if (n.alive)
 						nv.add(n);
 			

@@ -1,5 +1,8 @@
 package zero.store;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -18,6 +21,13 @@ public class SeriesDefinition implements Serializable {
 	 * Amount of replicas in the system
 	 */
 	public int replicaCount;
+	
+	/**
+	 * Identifier of the series generation. If a generation
+	 * changes, that means a series was deleted and remade new
+	 */
+	public long generation;	
+	
 	
 	/**
 	 * Upon a write, a trim() with argument of write_timestamp - autoTrim will be issued.
@@ -42,12 +52,6 @@ public class SeriesDefinition implements Serializable {
 	 */
 	public long tombstonedOn;
 	
-	/**
-	 * Identifier of the series generation. If a generation
-	 * changes, that means a series was deleted and remade new
-	 */
-	public long generation;
-	
 	public SeriesDefinition(String name, int recordSize, int replicaCount, String options) {
 		this.seriesName = name;
 		this.recordSize = recordSize;
@@ -57,6 +61,11 @@ public class SeriesDefinition implements Serializable {
 		this.generation = 0;
 		this.autoTrim = 0;
 	}
+	 
+	public boolean equals(SeriesDefinition sd) {
+		if (sd == null) return false;
+		return this.generation == sd.generation;
+	}
 	
 	/**
 	 * Checks whether sd is more important than this definition
@@ -65,7 +74,33 @@ public class SeriesDefinition implements Serializable {
 	 * @return whether sd is more current/important than this definition
 	 */
 	public boolean doesSupersede(SeriesDefinition sd) {
+		if (sd == null) return false;
 		return sd.generation > this.generation;
 	}
+
 	
+	// ------------------------------------ INTP representation
+	public void toDataStreamasINTPRepresentation(DataOutputStream dos) throws IOException {
+		dos.writeInt(replicaCount);
+		dos.writeInt(recordSize);
+		dos.writeLong(generation);
+		dos.writeLong(autoTrim);
+		dos.writeLong(tombstonedOn);
+		dos.writeUTF(options);
+		dos.writeUTF(seriesName);
+	}
+	
+	public static SeriesDefinition fromDataStreamasINTPRepresentation(DataInputStream dis) throws IOException {
+		int replicaCount = dis.readInt();
+		int recordSize = dis.readInt();
+		long generation = dis.readLong();
+		long autotrim = dis.readLong();
+		String options = dis.readUTF();
+		String seriesName = dis.readUTF();
+		
+		SeriesDefinition nd = new SeriesDefinition(seriesName, recordSize, replicaCount, options);
+		nd.autoTrim = autotrim;
+		nd.generation = generation;
+		return nd;
+	}	
 }

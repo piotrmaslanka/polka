@@ -5,6 +5,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import zero.gossip.GossipInbound;
+import zero.ifc.ClientInterface;
+import zero.ifc.LocalInterface;
+import zero.ifc.NetworkCallInbound;
 import zero.util.WorkUnit;
 
 /**
@@ -31,6 +34,12 @@ public class DispatchSingleConnection extends WorkUnit {
 				break;
 			case 1:
 				new GossipInbound(this.sc).run();
+				break;
+			case 2:
+				new NetworkCallInbound(this.sc, new LocalInterface()).run();
+				break;
+			case 3:
+				new NetworkCallInbound(this.sc, new ClientInterface()).run();
 				break;
 			default:
 				break;

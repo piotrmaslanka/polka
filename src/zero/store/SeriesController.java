@@ -46,11 +46,12 @@ public class SeriesController implements Closeable {
 	/**
 	 * Creates a SeriesController for given series
 	 * @param name name of the series
-	 * @throws NotFoundException thrown when series is not found
+	 * @throws NotFoundException thrown when series is not found (tombstoned or not declared)
 	 */
 	public SeriesController(String name) throws NotFoundException, IOException {
 		this.series = SeriesDefinitionDB.getInstance().getSeries(name);
 		if (this.series == null) throw new NotFoundException();
+		if (this.series.tombstonedOn != 0) throw new NotFoundException();
 
 		LFDSeries series_for_wac;
 		try {
