@@ -27,3 +27,5 @@ class SeriesDefinition(object):
         if len(nam) != lennam: 
             raise Exception
         return SeriesDefinition(nam, repc, genr, autr, recs, options, tombs)
+
+    

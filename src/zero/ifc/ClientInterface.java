@@ -13,6 +13,8 @@ import zero.H;
  */
 public class ClientInterface implements SystemInterface {
 	
+	private final static int MAX_REPLICAS = 4;
+	
 	public void writeSeries(SeriesDefinition serdef, long prev_timestamp, long cur_timestamp, byte[] data) throws LinkBrokenException, IllegalArgumentException, IOException, SeriesNotFoundException, IllegalArgumentException, DefinitionMismatchException {
 		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodes(serdef.seriesName, serdef.replicaCount);
 
@@ -68,7 +70,7 @@ public class ClientInterface implements SystemInterface {
 		boolean did_somebody_answer = false;
 		SeriesDefinition best_known_one = null;
 		
-		while (replica_no < 8) {
+		while (replica_no < MAX_REPLICAS) {
 			long target_hash = H.hash(seriesname, replica_no);
 			NodeDB.NodeInfo node_responsible = NodeDB.getInstance().getResponsibleNode(target_hash);
 			if (!node_responsible.alive) continue;

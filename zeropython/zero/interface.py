@@ -43,3 +43,27 @@ class ClientInterface(object):
             return None
         else:
             return SeriesDefinition.fromINTP(self.sock.recv(1024))
+        
+    def getHeadTimestamp(self, sd):
+        self.sock.send('\x02'+sd.toINTP())
+        result = ord(self.sock.recv(1))
+        if result == 1:
+            raise IOException()
+        elif result == 2:
+            raise SeriesNotFoundException()
+        elif result == 3:
+            raise DefinitionMismatchException() 
+        else:
+            return struct.unpack('>q', self.sock.recv(8))[0]
+    
+    def writeSeries(self, sd, prev_timestamp, cur_timestamp, data):
+        self.sock.send('\x03'+sd.toINTP()+struct.pack('>qqi', prev_timestamp, cur_timestamp, len(data))+data)
+        result = ord(self.sock.recv(1))
+        if result == 1:
+            raise IOException()
+        elif result == 2:
+            raise SeriesNotFoundException()
+        elif result == 3:
+            raise DefinitionMismatchException() 
+        elif result == 4:
+            raise IllegalArgumentException()
