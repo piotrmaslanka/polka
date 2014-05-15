@@ -36,8 +36,6 @@ public class NetworkCallInbound extends WorkUnit {
 			while (true) {
 				byte command = dis.readByte();
 				
-				System.out.println("Got command.");
-				
 				if (command == 0) {
 					String seriesName = dis.readUTF();
 					SeriesDefinition sd = null;

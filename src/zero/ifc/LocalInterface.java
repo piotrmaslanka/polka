@@ -46,7 +46,6 @@ public class LocalInterface implements SystemInterface {
 
 	@Override
 	public void writeSeries(SeriesDefinition sd, long prev_timestamp,	long cur_timestamp, byte[] data) throws LinkBrokenException, IOException, SeriesNotFoundException, IllegalArgumentException, DefinitionMismatchException {
-		System.out.format("writeSeries(%s, %d, %d, ...)\n", sd.seriesName, prev_timestamp, cur_timestamp);
 		SeriesController ctrl = this.openController(sd);
 		if (ctrl.getSeriesDefinition().recordSize != data.length) throw new IllegalArgumentException("Data size wrong");
 		
