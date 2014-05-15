@@ -95,11 +95,13 @@ public class SeriesDefinition implements Serializable {
 		int recordSize = dis.readInt();
 		long generation = dis.readLong();
 		long autotrim = dis.readLong();
+		long tombstonedon = dis.readLong();
 		String options = dis.readUTF();
 		String seriesName = dis.readUTF();
 		
 		SeriesDefinition nd = new SeriesDefinition(seriesName, recordSize, replicaCount, options);
 		nd.autoTrim = autotrim;
+		nd.tombstonedOn = tombstonedon;
 		nd.generation = generation;
 		return nd;
 	}	
