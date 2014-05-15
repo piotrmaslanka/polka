@@ -8,11 +8,11 @@ s.updateDefinition(sd)
 
 head = s.getHeadTimestamp(sd)
 
-for x in range(0, 10000):
+for x in range(0, 1000):
     print 'Current HEAD is '+str(head)
     s.writeSeries(sd, head, head+1, struct.pack('>i', head))
     head += 1
 
-#print s.read(sd, head-100, head)
+print s.read(sd, 10, 100)
 
 s.close()

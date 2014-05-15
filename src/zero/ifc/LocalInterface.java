@@ -2,7 +2,6 @@ package zero.ifc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channel;
 import java.nio.channels.WritableByteChannel;
 
 import zero.lfds.LFDDamagedException;

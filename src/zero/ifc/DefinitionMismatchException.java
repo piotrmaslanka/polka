@@ -5,5 +5,4 @@ package zero.ifc;
  *
  */
 public class DefinitionMismatchException extends IfcException {
-
 }
