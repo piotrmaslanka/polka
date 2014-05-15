@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
 import zero.store.SeriesDefinition;
 
@@ -114,6 +116,45 @@ public class NetworkInterface implements SystemInterface {
 				return SeriesDefinition.fromDataStreamasINTPRepresentation(this.dis);
 			else
 				throw new IOException();
+		} catch (IOException e) {
+			throw new LinkBrokenException();
+		} catch (RuntimeException e) {
+			throw new IOException();
+		}
+	}
+	
+	@Override
+	public void read(SeriesDefinition sd, long from, long to, WritableByteChannel channel)
+		throws LinkBrokenException, IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException {
+		
+		try {
+			this.dos.writeByte((byte)4);
+			sd.toDataStreamasINTPRepresentation(this.dos);
+			this.dos.writeLong(from);
+			this.dos.writeLong(to);
+			
+			int result = this.dis.readByte();
+			if (result == 1) throw new RuntimeException();
+			if (result == 2) throw new SeriesNotFoundException();
+			if (result == 3) throw new DefinitionMismatchException();
+			if (result == 4) throw new IllegalArgumentException();
+			
+			// rolling in
+			long ts = this.dis.readLong();
+			ByteBuffer record = ByteBuffer.allocate(sd.recordSize+8);
+			byte[] rec = new byte[sd.recordSize];
+			while (ts != -1) {
+				// roll one record
+				record.putLong(ts);
+				this.dis.readFully(rec);
+				record.put(rec);
+				record.flip();	
+				channel.write(record);
+				
+				// read next timestamp
+				ts = this.dis.readLong();
+			}
+
 		} catch (IOException e) {
 			throw new LinkBrokenException();
 		} catch (RuntimeException e) {

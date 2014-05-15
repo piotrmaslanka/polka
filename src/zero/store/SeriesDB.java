@@ -19,9 +19,7 @@ public class SeriesDB {
 
 	/**
 	 * Stores currently loaded controllers.
-	 * 
-	 * Right now relevant entries DO NOT EXIST if there is refcount=0,
-	 * but it may change as caching gets implemented
+	 * If refcount is zero, then series is cached but not in use
 	 */
 	final private Map<String, SeriesController> controllers = new HashMap<>();
 	final private Map<String, Integer> refcount = new HashMap<>();
@@ -33,7 +31,7 @@ public class SeriesDB {
 	 */
 	final private Map<String, Deque<SeriesDefinition>> definition_updates = new HashMap<>();
 	final private Map<String, Deque<Lock>> definition_update_completion_locks = new HashMap<>();
-	
+		
 	/**
 	 * Returns a SeriesController for given series
 	 * @param name series name
@@ -102,6 +100,21 @@ public class SeriesDB {
 		return lock;
 	}
 	
+	
+	/**
+	 * Compacts memory.
+	 * 
+	 * Evicts a single zero-refcount controller for now
+	 */
+	public void compactMemory() throws IOException {
+		for (SeriesController sc : this.controllers.values()) {
+			if (this.refcount.get(sc.series.seriesName) == 0) {
+				sc.physicalClose();
+				this.refcount.remove(sc.series.seriesName);
+				this.controllers.remove(sc.series.seriesName);
+			}
+		}
+	}
 
 	
 	/**
@@ -145,13 +158,18 @@ public class SeriesDB {
 		synchronized (this.refcount) {			
 			Integer refc = this.refcount.get(seriesName);
 			if (refc == 1) {
-				// destroy the controller
-				sc.physicalClose();
-				this.refcount.remove(seriesName);
-				this.controllers.remove(seriesName);
 				
-				// run redefinitions if needed
-				this.runRedefinitionsOrDont(seriesName);
+				if (this.definition_updates.containsKey(seriesName)) {
+					// If a redefinition is pending, eject this series
+					// destroy the controller
+					sc.physicalClose();
+					this.refcount.remove(seriesName);
+					this.controllers.remove(seriesName);
+					this.runRedefinitionsOrDont(seriesName);
+				} else {
+					// Else just un-cache
+					this.refcount.put(seriesName, 0);
+				}
 
 			} else {
 				// Just decrease the refcount

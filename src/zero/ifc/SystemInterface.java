@@ -2,6 +2,9 @@ package zero.ifc;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.channels.Channel;
+import java.nio.channels.WritableByteChannel;
 
 import zero.store.SeriesDefinition;
 
@@ -56,4 +59,18 @@ public interface SystemInterface extends Closeable {
 	 * @throws DefinitionMismatchException if generation doesn't match (and caller provided an older one)
 	 */
 	public long getHeadTimestamp(SeriesDefinition seriesname) throws LinkBrokenException, IOException, SeriesNotFoundException, DefinitionMismatchException;
+	
+	/**
+	 * Read data into target output stream.
+	 * 
+	 * Format is
+	 * 	an array of records (8byte big endian TIMESTAMP, binary[recordsize] data)
+	 * 	8 byte big endian -1
+	 * 
+	 * @param sd descriptor of target series
+	 * @param from start timestamp
+	 * @param to stop timestamp
+	 * @param channel target channel
+	 */
+	public void read(SeriesDefinition sd, long from, long to, WritableByteChannel channel) throws LinkBrokenException, IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException;
 }

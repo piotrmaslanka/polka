@@ -26,6 +26,9 @@ class ClientInterface(object):
         self.sock.connect(self.addr)
         self.sock.send('\x03')
         
+    def close(self):
+        self.sock.close()
+        
     def updateDefinition(self, defn):
         self.sock.send('\x01'+defn.toINTP())
         result = ord(self.sock.recv(1))
@@ -67,3 +70,27 @@ class ClientInterface(object):
             raise DefinitionMismatchException() 
         elif result == 4:
             raise IllegalArgumentException()
+
+    def read(self, sd, from_, to):
+        self.sock.send('\x04'+sd.toINTP()+struct.pack('>qq', from_, to))
+        result = ord(self.sock.recv(1))
+        if result == 1:
+            raise IOException()
+        elif result == 2:
+            raise SeriesNotFoundException()
+        elif result == 3:
+            raise DefinitionMismatchException() 
+        elif result == 4:
+            raise IllegalArgumentException()
+        
+        print 'result was %s' % (result, )
+
+        ts, = struct.unpack('>q', self.sock.recv(8))
+        dat = []
+        while ts != -1:
+            data = self.sock.recv(sd.recordsize)
+            dat.append((ts, data))
+
+            ts, = struct.unpack('>q', self.sock.recv(8))
+            
+        return dat            

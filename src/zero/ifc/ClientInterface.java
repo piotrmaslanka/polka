@@ -1,6 +1,7 @@
 package zero.ifc;
 
 import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
 
 import zero.gossip.NodeDB;
 import zero.store.SeriesDefinition;
@@ -119,6 +120,31 @@ public class ClientInterface implements SystemInterface {
 
 	@Override
 	public void close() throws IOException {}
+
+	@Override
+	public void read(SeriesDefinition sd, long from, long to,
+			WritableByteChannel channel) throws LinkBrokenException,
+			IOException, SeriesNotFoundException, DefinitionMismatchException,
+			IllegalArgumentException {
+		
+		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodes(sd.seriesName, sd.replicaCount);
+
+		for (NodeDB.NodeInfo ni : nodes) {
+			try {
+				InterfaceFactory.getInterface(ni).read(sd, from, to, channel);
+				return;
+			} catch (LinkBrokenException | IOException e) {
+				continue;
+			} catch (DefinitionMismatchException | SeriesNotFoundException e) {
+				throw e;	// someone has newer than we do
+			} catch (IllegalArgumentException e) {
+				throw e;
+			}
+		}
+		
+		throw new LinkBrokenException();	// nobody home		
+		
+	}
 	
 	
 }

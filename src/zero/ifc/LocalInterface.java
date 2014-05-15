@@ -1,7 +1,12 @@
 package zero.ifc;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
+import java.nio.channels.WritableByteChannel;
 
+import zero.lfds.LFDDamagedException;
+import zero.lfds.LFDResultSet;
 import zero.store.NotFoundException;
 import zero.store.SeriesController;
 import zero.store.SeriesDB;
@@ -73,7 +78,39 @@ public class LocalInterface implements SystemInterface {
 		SeriesDB.getInstance().redefineAsync(sd).lock();
 	}
 
+	@Override
+	public void read(SeriesDefinition sd, long from, long to, WritableByteChannel channel)
+		throws LinkBrokenException, IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException {
+		
+		SeriesController ctrl = this.openController(sd);		
+		try {
+			LFDResultSet rs = null;
+			try {
+				rs = ctrl.read(from, to);
+				// allocate buffers for 1024 entries
+				ByteBuffer bb = ByteBuffer.allocateDirect(1024*(sd.recordSize+8));
+				
+				while (!rs.isFinished()) {
+					bb.clear();
+					try {
+						rs.fetch(bb, 1024);
+					} catch (LFDDamagedException e) {
+						throw new IOException();
+					}
+					bb.flip();
+					channel.write(bb);
+				}
+				
+			} finally {
+				rs.close();
+			}
+		} finally {
+			ctrl.close();
+		}		
+		
+	}
 
+	
 	@Override
 	public void close() throws IOException {}
 }

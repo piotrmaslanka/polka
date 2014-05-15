@@ -2,6 +2,7 @@ package zero.lfds.suzie;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channel;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -165,6 +166,40 @@ public class SUZIEResultSet implements LFDResultSet {
 		this.records_remaining--;
 		return timestamp;
 	}
+
+	private void loadEntryRaw(ByteBuffer data) throws IOException {
+		data.limit(data.position()+this.recsize+8);
+		this.cfile.read(data);
+		data.limit(data.capacity());
+		this.records_remaining--;
+	}
+	
+	
+	public int fetch(ByteBuffer rawdata, int bufsize) throws IOException, LFDDamagedException {
+		
+		if (rawdata.capacity() != (8+this.recsize)*bufsize) throw new IllegalArgumentException("rawdata buffer too small");
+		if (this.from == this.to) return 0;
+		
+		int readed_in = 0;
+		
+		while (bufsize > 0) {
+			if (this.records_remaining == 0) {
+				if (this.seqptr == this.blocks.length-1)
+					// End of read, finally
+					return readed_in;
+				else
+					this.load_next_file();
+				continue;
+			}
+			
+			this.loadEntryRaw(rawdata);
+			readed_in++;
+			bufsize--;
+		}
+		
+		return readed_in;		
+		
+	}
 	
 	@Override
 	public int fetch(long[] timestamps, ByteBuffer rawdata, int bufsize)
@@ -192,7 +227,7 @@ public class SUZIEResultSet implements LFDResultSet {
 		
 		return readed_in;
 	}
-
+	
 	@Override
 	public void close() throws IOException {
 		if (this.cfile != null)
