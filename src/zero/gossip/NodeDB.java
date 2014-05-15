@@ -171,7 +171,7 @@ public class NodeDB implements Cloneable {
 		for (NodeDB.NodeInfo ni : this.nodedb.values())
 			if (hash <= ni.nodehash)
 				return ni;
-		throw new RuntimeException("Should not happen");
+		throw new RuntimeException("Not entire hash range is covered. Your setup is shit.");
 	}}
 	
 	/**
