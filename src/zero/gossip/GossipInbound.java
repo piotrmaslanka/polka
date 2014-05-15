@@ -56,6 +56,7 @@ public class GossipInbound extends WorkUnit {
 			for (int i=0; i<ga.nodes.length; i++)
 				nodes[i] = ga.nodes[i].toNodeInfo();
 			
+			System.out.println("Received GossipAdvertise");
 			NodeDB.getInstance().update(nodes);
 				
 			if (ga.spillback) {			
@@ -64,9 +65,6 @@ public class GossipInbound extends WorkUnit {
 				new GossipOutbound(gam, NodeDB.getInstance().getNodeByInetAddress(source)).run();
 			}
 		}
-		
-		if (m instanceof GossipHeartbeat) 
-			System.out.format("Received heartbeat from %s\n", source.toString());
 	}
 	
 	@Override

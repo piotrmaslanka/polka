@@ -119,7 +119,6 @@ public class NetworkCallInbound extends WorkUnit {
 				dos.flush();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			sc.close();
 			ifc.close();

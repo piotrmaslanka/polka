@@ -21,7 +21,7 @@ public class NetworkInterface implements SystemInterface {
 	 */
 	public NetworkInterface(InetSocketAddress addr) throws IOException {
 		this.sock = new Socket(addr.getAddress().getHostAddress(), addr.getPort());
-		this.sock.setSoTimeout(10);
+		this.sock.setSoTimeout(10000);
 		
 		this.dis = new DataInputStream(this.sock.getInputStream());
 		this.dos = new DataOutputStream(this.sock.getOutputStream());
