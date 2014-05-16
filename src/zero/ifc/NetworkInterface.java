@@ -20,7 +20,8 @@ public class NetworkInterface implements SystemInterface {
 	 * Connect to target node.
 	 */
 	public NetworkInterface(InetSocketAddress addr) throws IOException {
-		this.sock = new Socket(addr.getAddress().getHostAddress(), addr.getPort());
+		this.sock = new Socket();
+		this.sock.connect(addr, 5000);
 		this.sock.setSoTimeout(10000);
 		
 		this.dis = new DataInputStream(this.sock.getInputStream());
