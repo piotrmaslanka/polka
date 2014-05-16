@@ -140,20 +140,18 @@ public class ClientInterface implements SystemInterface {
 			try {
 				ifc = InterfaceFactory.getInterface(node_responsible);
 			} catch (IOException e) {
-				replica_no++;
 				continue;
 			}		
 			
 			try {
 				ifc.updateDefinition(sd);
+				any_update_succeeded = true;
 			} catch (LinkBrokenException | IOException e) {
 				// they will fault recover later
 				continue;
 			} finally {
 				ifc.close();
 			}
-			
-			any_update_succeeded = true;
 		}
 		
 		if (!any_update_succeeded) throw new LinkBrokenException();	// nobody answered
