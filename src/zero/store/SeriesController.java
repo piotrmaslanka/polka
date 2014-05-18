@@ -10,6 +10,8 @@ import zero.lfds.LFDNotFoundException;
 import zero.lfds.LFDOpenedException;
 import zero.lfds.LFDResultSet;
 import zero.lfds.LFDSeries;
+import zero.repair.RepairRequest;
+import zero.repair.ReparatorySupervisorThread;
 import zero.startup.ConfigManager;
 
 /**
@@ -67,6 +69,16 @@ public class SeriesController implements Closeable {
 	}
 	
 	/**
+	 * Checks whether a partial with given name exist. This is called by reparatory thread
+	 * @param from partial name
+	 * @return whether partial exists
+	 */
+	public boolean doesPartialExist(long from) {
+		return this.wacon.partialExists(from);
+	}
+	
+	
+	/**
 	 * Adds an entry
 	 * @param previousTimestamp timestamp of previous write
 	 * @param currentTimestamp timestamp of this write
@@ -80,15 +92,17 @@ public class SeriesController implements Closeable {
 		
  		if (previousTimestamp == rootserTimestamp) {
 			// this is a standard LFD-serializable
+ 			System.out.format("Standard write: %s at (%d, %d)\n", this.series.seriesName, previousTimestamp, currentTimestamp);
 			this.primary_storage.write(currentTimestamp, value);
  			this.wacon.signalWrite(currentTimestamp);
  			
  			if (this.series.autoTrim > 0)
  				this.primary_storage.trim(currentTimestamp - this.series.autoTrim);
  		} else { 			
+ 			System.out.format("WACON write: %s at (%d, %d)\n", this.series.seriesName, previousTimestamp, currentTimestamp);
  			this.wacon.write(previousTimestamp, currentTimestamp, value);
 			// Now we need to signal that this series needs a repair...
-			
+			ReparatorySupervisorThread.getInstance().postRequest(new RepairRequest(this.series, this.primary_storage.getHeadTimestamp(), previousTimestamp));
 		}
 	}
 	

@@ -32,6 +32,7 @@ public class SeriesDB {
 	final private Map<String, Deque<SeriesDefinition>> definition_updates = new HashMap<>();
 	final private Map<String, Deque<Lock>> definition_update_completion_locks = new HashMap<>();
 		
+
 	/**
 	 * Returns a SeriesController for given series
 	 * @param name series name

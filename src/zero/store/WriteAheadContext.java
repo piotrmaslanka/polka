@@ -58,7 +58,7 @@ public class WriteAheadContext {
 			} catch (NumberFormatException e) {
 				throw new IOException();
 			}
-			
+
 			Collections.sort(this.partials_l);			
 			
 			// load all LFD partial series
@@ -110,6 +110,19 @@ public class WriteAheadContext {
 	}
 	
 	/**
+	 * Returns whether partial of given name exists
+	 * @param from partial name
+	 * @return whether partial exists
+	 */
+	public boolean partialExists(long from) {
+		for (long pname : this.partials_l)
+			if (from == pname)
+				return true;
+		return false;
+	}
+	
+	
+	/**
 	 * A write that is for sure expected to hit WA
 	 * @throws IllegalArgumentException this is a write that previously hit WA
 	 * 		   or just plain doesn't make sense
@@ -120,7 +133,7 @@ public class WriteAheadContext {
 		// last partial on the list
 
 		LFDSeries partial = null;
-				
+
 		if (!this.needsRepair()) {
 			this.createPartialStorage();
 			this.createNewPartial(prev_timestamp);
@@ -172,6 +185,7 @@ public class WriteAheadContext {
 			byte[] ba = buf.array();		// get the backing array
 			
 			while (data.fetch(timestamps, buf, 1) == 1) {
+				System.out.format("Transcription(LL): %s at %d\n", this.sernfo.seriesName, timestamps[0]);
 				this.primary_storage.write(timestamps[0], ba);
 				buf.clear();
 			}
@@ -210,6 +224,7 @@ public class WriteAheadContext {
 				// get next timestamp, because next time this if is called
 				// it will make sense
 				timestamp = this.partials.get(0).getHeadTimestamp();
+				System.out.format("Partial transcribed: %s at %d\n", this.sernfo.seriesName, timestamp);
 				this.transcribePartial(0);				
 			}
 			else
