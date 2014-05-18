@@ -32,7 +32,7 @@ public interface LFDSeries {
 	 * 
 	 * @return a result set that can be used to retrieve the data
 	 * @param from to start reading, inclusive
-	 * @param to to end reading, exclusive
+	 * @param to to end reading, inclusive
 	 */
 	public LFDResultSet read(long from, long to) throws IOException, LFDDamagedException;
 	

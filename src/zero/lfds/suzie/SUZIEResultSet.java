@@ -123,10 +123,18 @@ public class SUZIEResultSet implements LFDResultSet {
 		
 		if (this.blocks.length == 1) {
 			// Matter's simple, really.
-			long index_start = this.locate(this.from, true);
-			long index_stop = this.locate(this.to, false);
+			long index_start;
+			long index_stop;
+			try {
+				index_start = this.locate(this.from, true);
+				index_stop = this.locate(this.to, false);
+			} catch (IllegalArgumentException e) {
+				// that means there there's just no data..
+				this.records_remaining = 0;
+				return;
+			}
 			
-			this.records_remaining = index_stop - index_start;
+			this.records_remaining = index_stop - index_start + 1;
 			this.cfile.position(index_start*(8+this.recsize));
 			return;
 		}
@@ -197,6 +205,7 @@ public class SUZIEResultSet implements LFDResultSet {
 			bufsize--;
 		}
 		
+		System.out.format("SUZIE low-level fetch, readed %d rows in.\n", readed_in);
 		return readed_in;		
 		
 	}

@@ -120,7 +120,7 @@ public class SUZIESeries implements LFDSeries {
 			throw new IllegalArgumentException("to must be greater or equal to from");
 		
 		while (this.trim_in_progress) Thread.yield();
-		
+
 		List<Long> files = new ArrayList<Long>();
 		DirectoryStream<Path> ds = Files.newDirectoryStream(this.seriespath);
 		for (Path path : ds) {
