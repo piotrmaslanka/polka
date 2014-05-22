@@ -214,7 +214,6 @@ public class SUZIEResultSet implements LFDResultSet {
 			throws IOException, LFDDamagedException {
 
 		if (rawdata.capacity() != this.recsize*bufsize) throw new IllegalArgumentException("rawdata buffer too small");
-		if (this.from == this.to) return 0;
 		
 		int readed_in = 0;
 		

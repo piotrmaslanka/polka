@@ -46,7 +46,7 @@ public class SUZIE {
 		int rows_readed_in = 0;
 		long[] tses = new long[1];
 		ByteBuffer dats = ByteBuffer.allocate(4);
-		
+
 		// Read 1:
 		LFDResultSet rs = ser.read(1, 2);
 		while (rs.fetch(tses, dats, 1) == 1) { dats.clear(); rows_readed_in++; }
