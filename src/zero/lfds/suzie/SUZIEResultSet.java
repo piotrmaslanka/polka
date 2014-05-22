@@ -190,7 +190,6 @@ public class SUZIEResultSet implements LFDResultSet {
 			if (this.records_remaining == 0) {
 				if (this.seqptr == this.blocks.length-1) {
 					// End of read, finally
-					System.out.format("SUZIE low-level fetch, readed %d rows in.\n", readed_in);
 					return readed_in;
 				} else
 					this.load_next_file();
@@ -202,7 +201,6 @@ public class SUZIEResultSet implements LFDResultSet {
 			bufsize--;
 		}
 		
-		System.out.format("SUZIE low-level fetch, readed %d rows in.\n", readed_in);
 		return readed_in;		
 		
 	}
@@ -219,7 +217,6 @@ public class SUZIEResultSet implements LFDResultSet {
 			if (this.records_remaining == 0) {
 				if (this.seqptr == this.blocks.length-1) {
 					// End of read, finally
-					System.out.format("SUZIE hi-level fetch, readed %d rows in.\n", readed_in);		
 					return readed_in;
 				} else
 					this.load_next_file();
@@ -230,7 +227,6 @@ public class SUZIEResultSet implements LFDResultSet {
 			readed_in++;
 			bufsize--;
 		}
-		System.out.format("SUZIE hi-level fetch, readed %d rows in.\n", readed_in);		
 		
 		return readed_in;
 	}

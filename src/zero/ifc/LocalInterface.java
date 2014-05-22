@@ -84,17 +84,15 @@ public class LocalInterface implements SystemInterface {
 		SeriesController ctrl = this.openController(sd);		
 		try {
 			LFDResultSet rs = null;
-			int tot_rin = 0;
 			try {
 				rs = ctrl.read(from, to);
 				// allocate buffers for 1024 entries
 				ByteBuffer bb = ByteBuffer.allocateDirect(1024*(sd.recordSize+8));
 				
 				while (!rs.isFinished()) {
-					System.out.println("Fetch!");
 					bb.clear();
 					try {
-						tot_rin += rs.fetch(bb, 1024);
+						rs.fetch(bb, 1024);
 					} catch (LFDDamagedException e) {
 						throw new IOException();
 					}
@@ -106,7 +104,6 @@ public class LocalInterface implements SystemInterface {
 				bb.putLong(-1);
 				bb.flip();
 				channel.write(bb);
-				System.out.format("read(%s): %d readed in, nach (%d, %d) gefragt\n", sd.seriesName, tot_rin, from, to);
 			} finally {
 				rs.close();
 			}

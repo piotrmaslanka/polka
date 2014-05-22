@@ -146,8 +146,6 @@ public class NetworkInterface implements SystemInterface {
 			byte[] rec = new byte[sd.recordSize];
 			while (ts != -1) {
 				record.clear();
-				System.out.format("Readed ts=%d, pwnam=%s\n", ts, sd.seriesName);
-				System.out.flush();
 				// roll one record
 				record.putLong(ts);
 				this.dis.readFully(rec);
