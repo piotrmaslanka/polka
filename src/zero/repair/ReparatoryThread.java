@@ -47,10 +47,7 @@ public class ReparatoryThread extends Thread {
 		}
 		public void run() {
 			try {
-				System.out.format("FROM=%d, TO=%d\n", this.from, this.to);
-				System.out.println("Recovery thread: attempt...");
 				this.ifc.read(this.sd, this.from+1, this.to, this.wc);
-				System.out.println("Recovery thread: success!");
 			} catch (LinkBrokenException | IOException | SeriesNotFoundException | DefinitionMismatchException exc) {
 				this.isFailed = true;
 			} finally {
@@ -95,7 +92,6 @@ public class ReparatoryThread extends Thread {
 			
 			// means read is finished
 			long thisTimestamp = timestamp.getLong();
-			System.out.format("Repari update to %s, p=%d, t=%d\n", this.sd.seriesName, previousTimestamp, thisTimestamp);
 			this.sercon.write(previousTimestamp, thisTimestamp, record.array());
 			System.out.flush();
 			previousTimestamp = thisTimestamp;			
@@ -121,19 +117,16 @@ public class ReparatoryThread extends Thread {
 				try {
 					nifc = new NetworkInterface(ni.nodecomms);
 				} catch (IOException e) {
-					System.out.println("Failed due to NetworkInterface Z");
 					continue;
 				}
 				
 				try {
 					this.tryNode(ni, nifc);
 				} catch (LinkBrokenException | IOException e) {
-					System.out.println("Failed due to NetworkInterface C");
 				} finally {
 					try {
 						nifc.close();
 					} catch (IOException e) {
-						System.out.println("Failed due to NetworkInterface A");
 					}
 				}
 			}
@@ -142,7 +135,6 @@ public class ReparatoryThread extends Thread {
 			try {
 				this.sercon.close();
 			} catch (IOException e) {
-				System.out.println("Failed due to NetworkInterface B");
 			}
 		}
 	}
