@@ -58,7 +58,6 @@ public class SUZIEResultSet implements LFDResultSet {
 	
 	@Override
 	public boolean isFinished() {
-		if (this.to == this.from) return true;
 		return (this.records_remaining == 0) && (this.seqptr == this.blocks.length-1);
 	}
 	
@@ -183,18 +182,17 @@ public class SUZIEResultSet implements LFDResultSet {
 	
 	
 	public int fetch(ByteBuffer rawdata, int bufsize) throws IOException, LFDDamagedException {
-		
-		if (rawdata.capacity() != (8+this.recsize)*bufsize) throw new IllegalArgumentException("rawdata buffer too small");
-		if (this.from == this.to) return 0;
+		if (rawdata.capacity() < (8+this.recsize)*bufsize) throw new IllegalArgumentException("rawdata buffer too small");
 		
 		int readed_in = 0;
 		
 		while (bufsize > 0) {
 			if (this.records_remaining == 0) {
-				if (this.seqptr == this.blocks.length-1)
+				if (this.seqptr == this.blocks.length-1) {
 					// End of read, finally
+					System.out.format("SUZIE low-level fetch, readed %d rows in.\n", readed_in);
 					return readed_in;
-				else
+				} else
 					this.load_next_file();
 				continue;
 			}
@@ -213,16 +211,17 @@ public class SUZIEResultSet implements LFDResultSet {
 	public int fetch(long[] timestamps, ByteBuffer rawdata, int bufsize)
 			throws IOException, LFDDamagedException {
 
-		if (rawdata.capacity() != this.recsize*bufsize) throw new IllegalArgumentException("rawdata buffer too small");
+		if (rawdata.capacity() < this.recsize*bufsize) throw new IllegalArgumentException("rawdata buffer too small");
 		
 		int readed_in = 0;
 		
 		while (bufsize > 0) {
 			if (this.records_remaining == 0) {
-				if (this.seqptr == this.blocks.length-1)
+				if (this.seqptr == this.blocks.length-1) {
 					// End of read, finally
+					System.out.format("SUZIE hi-level fetch, readed %d rows in.\n", readed_in);		
 					return readed_in;
-				else
+				} else
 					this.load_next_file();
 				continue;
 			}
@@ -231,6 +230,7 @@ public class SUZIEResultSet implements LFDResultSet {
 			readed_in++;
 			bufsize--;
 		}
+		System.out.format("SUZIE hi-level fetch, readed %d rows in.\n", readed_in);		
 		
 		return readed_in;
 	}

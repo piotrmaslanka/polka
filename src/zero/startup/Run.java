@@ -14,7 +14,7 @@ import zero.store.SeriesDefinitionDB;
 public class Run {
 
 	
-	public static void main(String[] args) throws IOException, InterruptedException {		
+	public static void main(String[] args) throws IOException, InterruptedException {	
 		ConfigManager.loadConfig("config.json");
 		NodeDB.getInstance();				// create the NodeDB
 		SeriesDefinitionDB.getInstance();	// create the SeriesDefinitionDB

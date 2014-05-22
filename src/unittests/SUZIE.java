@@ -37,6 +37,47 @@ public class SUZIE {
 	}
 
 	@Test
+	public void basicSeriesReadout2() throws Exception {
+		LFDSeries ser = this.driver.createSeries("basicSeriesReadout", 4, "");
+		byte[] data = new byte[] { 1,  2, 3, 4};
+		ser.write(0, data);
+		ser.write(1, data);
+		
+		// do some preliminary readouts
+		int rows_readed_in = 0;
+		long[] tses = new long[1];
+		ByteBuffer dats = ByteBuffer.allocate(4);
+
+		// Read 1:
+		LFDResultSet rs = ser.read(1, 1);
+		assertEquals(rs.isFinished(), false);		
+		while (rs.fetch(tses, dats, 1) == 1) { dats.clear(); rows_readed_in++; }
+		assertEquals(rs.isFinished(), true);			
+		assertEquals(rows_readed_in, 1);
+		rows_readed_in = 0;
+		rs.close();
+
+		// Read 1:
+		rs = ser.read(1, 1);
+		ByteBuffer xdats = ByteBuffer.allocate((8+4)*1024);
+		assertEquals(rs.isFinished(), false);		
+		while (true) {
+			int rrin = rs.fetch(xdats, 1);
+			xdats.clear();
+			if (rrin == 0) break;
+			rows_readed_in += rrin;
+		}
+		assertEquals(rs.isFinished(), true);			
+		assertEquals(rows_readed_in, 1);
+		rows_readed_in = 0;
+		rs.close();		
+		
+		// close series
+		ser.close();
+		this.driver.deleteSeries("basicSeriesReadout");
+	}
+	
+	@Test
 	public void basicSeriesReadout1() throws Exception {
 		LFDSeries ser = this.driver.createSeries("basicSeriesReadout", 4, "");
 		byte[] data = new byte[] { 1,  2, 3, 4};

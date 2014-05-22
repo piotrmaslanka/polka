@@ -92,6 +92,7 @@ public class ReparatoryThread extends Thread {
 			
 			// means read is finished
 			long thisTimestamp = timestamp.getLong();
+			System.out.format("Reparatory write to %s (%d, %d)\n", this.sd.seriesName, previousTimestamp, thisTimestamp);
 			this.sercon.write(previousTimestamp, thisTimestamp, record.array());
 			System.out.flush();
 			previousTimestamp = thisTimestamp;			
