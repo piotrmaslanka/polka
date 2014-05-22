@@ -51,7 +51,6 @@ public class ReparatorySupervisorThread extends Thread {
 				try {
 					sercon = SeriesDB.getInstance().getSeries(rr.sd.seriesName);
 					if (!sercon.doesPartialExist(rr.to)) {
-						System.out.format("Suggested repair for %d, no need to\n", rr.to);
 						continue;
 					}
 				} catch (IOException | NotFoundException e) {
@@ -63,8 +62,6 @@ public class ReparatorySupervisorThread extends Thread {
 						continue;
 					}
 				}
-				System.out.format("Reparatory thread starting for %s:%d\n", rr.sd.seriesName, rr.to);
-				
 				ReparatoryThread rt = new ReparatoryThread(sercon, rr.from, rr.to);
 				rt.start();
 				try {
