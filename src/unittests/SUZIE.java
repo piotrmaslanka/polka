@@ -67,7 +67,13 @@ public class SUZIE {
 		assertEquals(rows_readed_in, 0);
 		rows_readed_in = 0;
 		rs.close();
-		
+	
+		// Read 4:
+		rs = ser.read(1, 1);
+		while (rs.fetch(tses, dats, 1) == 1) { dats.clear(); rows_readed_in++; }
+		assertEquals(rows_readed_in, 1);
+		rows_readed_in = 0;
+		rs.close();		
 		
 		// close series
 		ser.close();

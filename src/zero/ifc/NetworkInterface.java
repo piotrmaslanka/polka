@@ -145,6 +145,9 @@ public class NetworkInterface implements SystemInterface {
 			ByteBuffer record = ByteBuffer.allocate(sd.recordSize+8);
 			byte[] rec = new byte[sd.recordSize];
 			while (ts != -1) {
+				record.clear();
+				System.out.format("Readed ts=%d, pwnam=%s\n", ts, sd.seriesName);
+				System.out.flush();
 				// roll one record
 				record.putLong(ts);
 				this.dis.readFully(rec);
@@ -155,6 +158,11 @@ public class NetworkInterface implements SystemInterface {
 				// read next timestamp
 				ts = this.dis.readLong();
 			}
+			
+			record.clear();
+			record.putLong(-1);
+			record.flip();
+			channel.write(record);
 
 		} catch (IOException e) {
 			throw new LinkBrokenException();

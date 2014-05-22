@@ -49,7 +49,6 @@ public class NetworkCallInbound extends WorkUnit {
 					} catch (LinkBrokenException | IOException e) {
 						dos.writeByte((byte)1);
 					}	
-					dos.flush();
 				}
 				else if (command == 1) {
 					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
@@ -59,7 +58,6 @@ public class NetworkCallInbound extends WorkUnit {
 					} catch (LinkBrokenException | IOException e) {
 						dos.writeByte((byte)1);
 					}
-					dos.flush();
 				}
 				else if (command == 2) {
 					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
@@ -73,8 +71,7 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)2);
 					} catch (DefinitionMismatchException e) {
 						dos.writeByte((byte)3);
-					}
-					dos.flush();				
+					}			
 				}
 				else if (command == 3) {
 					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
@@ -95,7 +92,6 @@ public class NetworkCallInbound extends WorkUnit {
 					} catch (IllegalArgumentException e) {
 						dos.writeByte((byte)4);
 					}
-					dos.flush();
 				} else if (command == 4) {
 					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
 					long from = dis.readLong();
@@ -104,7 +100,6 @@ public class NetworkCallInbound extends WorkUnit {
 					try {
 						dos.writeByte((byte)0);
 						ifc.read(sd, from, to, this.sc);
-						dos.writeLong(-1);
 					} catch (LinkBrokenException | IOException e) {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
@@ -115,6 +110,7 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)4);
 					}															
 				}
+				
 				dos.flush();
 			}
 		} catch (Exception e) {

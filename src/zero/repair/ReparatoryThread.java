@@ -20,6 +20,7 @@ import zero.store.SeriesDefinition;
  */
 public class ReparatoryThread extends Thread {
 	
+
 	final private SeriesController sercon;
 	final private SeriesDefinition sd;
 	private long from;
@@ -46,7 +47,10 @@ public class ReparatoryThread extends Thread {
 		}
 		public void run() {
 			try {
+				System.out.format("FROM=%d, TO=%d\n", this.from, this.to);
+				System.out.println("Recovery thread: attempt...");
 				this.ifc.read(this.sd, this.from+1, this.to, this.wc);
+				System.out.println("Recovery thread: success!");
 			} catch (LinkBrokenException | IOException | SeriesNotFoundException | DefinitionMismatchException exc) {
 				this.isFailed = true;
 			} finally {
@@ -63,6 +67,7 @@ public class ReparatoryThread extends Thread {
 	public void tryNode(NodeDB.NodeInfo node, SystemInterface ifc) throws LinkBrokenException, IOException {
 		
 		Pipe pipe = Pipe.open();
+		pipe.sink().configureBlocking(true);
 		pipe.source().configureBlocking(true);
 		
 		TryNodeReadingThread tnrt = new TryNodeReadingThread(this.sd, ifc, pipe.sink(), this.from, this.to);

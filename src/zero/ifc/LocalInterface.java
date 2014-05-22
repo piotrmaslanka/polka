@@ -100,6 +100,11 @@ public class LocalInterface implements SystemInterface {
 					channel.write(bb);
 				}
 				
+				bb.clear();
+				bb.putLong(-1);
+				bb.flip();
+				channel.write(bb);
+				
 			} finally {
 				rs.close();
 			}
