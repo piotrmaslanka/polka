@@ -1,6 +1,5 @@
 package zero.lfds;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 /**

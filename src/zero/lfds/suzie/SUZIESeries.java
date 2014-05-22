@@ -3,7 +3,6 @@ package zero.lfds.suzie;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.commons.io.FileUtils;
 
 import zero.lfds.LFDDamagedException;
 import zero.lfds.LFDOpenedException;

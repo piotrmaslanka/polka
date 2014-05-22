@@ -36,8 +36,6 @@ public class ReparatorySupervisorThread extends Thread {
 		super();
 	}
 
-	
-	@SuppressWarnings("finally")
 	public void run() {
 		while (!isTerminated) {
 			RepairRequest rr = this.requests.pollLast();
@@ -76,7 +74,6 @@ public class ReparatorySupervisorThread extends Thread {
 				}
 				
 				System.out.flush();
-				
 			}
 		}
 	}

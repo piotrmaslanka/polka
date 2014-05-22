@@ -3,7 +3,6 @@ package zero.lfds;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channel;
 
 /**
  * Class that represents data readed from given series by
