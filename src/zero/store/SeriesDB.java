@@ -139,6 +139,13 @@ public class SeriesDB {
 				Lock lock = lockvector.pollFirst();
 				SeriesDefinition newsd = sd.pollFirst();
 				
+				// if we are redefining a section, it needs to be closed first!
+				if (this.refcount.containsKey(seriesName)) {
+					this.controllers.get(seriesName).physicalClose();
+					this.refcount.remove(seriesName);
+					this.controllers.remove(seriesName);
+				}
+				
 				dut.changeTo(newsd);
 				if (lock != null)
 					lock.unlock();

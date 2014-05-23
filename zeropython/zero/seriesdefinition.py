@@ -34,7 +34,7 @@ class SeriesDefinition(object):
         return self._generation
     @generation.setter
     def generation(self, value):
-        self._generation = value
+        self._generation = int(value)
         self._intp = None
         
     @property
@@ -42,7 +42,7 @@ class SeriesDefinition(object):
         return self._recordsize
     @recordsize.setter
     def recordsize(self, value):
-        self._recordsize = value
+        self._recordsize = int(value)
         self._intp = None        
         
     @property
@@ -66,7 +66,7 @@ class SeriesDefinition(object):
         return self._tombstonedon
     @tombstonedon.setter
     def tombstonedon(self, value):
-        self._tombstonedon = value
+        self._tombstonedon = long(value)
         self._intp = None        
         
     def __precompileINTP(self):

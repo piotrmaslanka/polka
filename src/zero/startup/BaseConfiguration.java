@@ -43,6 +43,8 @@ public class BaseConfiguration {
 	public Path repair_datapath;
 	
 	
+	public int gc_grace_period;
+	
 	// -------------------- derived from configuration
 	
 	/**

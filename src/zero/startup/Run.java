@@ -2,6 +2,7 @@ package zero.startup;
 
 import java.io.IOException;
 
+import zero.gcollector.GarbageCollectionThread;
 import zero.gossip.GossipOutbound;
 import zero.gossip.GossipThread;
 import zero.gossip.NodeDB;
@@ -22,6 +23,7 @@ public class Run {
 
 		ReparatorySupervisorThread.getInstance().start();
 		GossipThread.getInstance().start();
+		new GarbageCollectionThread().start();
 		DispatcherThread dt = new DispatcherThread();
 		dt.start();
 		

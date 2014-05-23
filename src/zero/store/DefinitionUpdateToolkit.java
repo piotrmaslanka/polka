@@ -27,9 +27,20 @@ final public class DefinitionUpdateToolkit {
 	 * @param sd New definition
 	 */
 	protected void changeTo(SeriesDefinition sd) throws IOException {
-		if (this.sd != null)
+		if (this.sd != null) {
+
+			// SPECIAL CASE: If defining with same generation and expired tombstone, data gets physically
+			// removed			
+			if (this.sd.generation == sd.generation)
+				if (sd.tombstonedOn > 0) 
+					if (((System.currentTimeMillis() / 1000) - sd.tombstonedOn) > ConfigManager.get().gc_grace_period) {
+						// physically trash the data
+						SeriesDefinitionDB.getInstance().__hardDeleteSeries(sd.seriesName);
+						return;
+					}
+			
 			if (!this.sd.doesSupersede(sd)) return;  // generation not important
-		
+		}
 		
 		boolean performDeletion = false;
 		boolean performCreation = false;
@@ -61,9 +72,11 @@ final public class DefinitionUpdateToolkit {
 		
 		if (performCreation)
 			try {
-				ConfigManager.get().storage.createSeries(sd.seriesName, sd.recordSize, sd.options);
+				ConfigManager.get().storage.createSeries(sd.seriesName, sd.recordSize, sd.options).close();
 			} catch (LFDAlreadyExistsException e) {
 				throw new RuntimeException("Invariant broken: this does exist!");
+			} catch (LFDOpenedException e) {
+				// ain't gonna happen
 			}
 		
 		SeriesDefinitionDB.getInstance().updateSeries(sd);
