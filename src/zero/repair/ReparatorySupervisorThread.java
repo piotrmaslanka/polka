@@ -37,6 +37,7 @@ public class ReparatorySupervisorThread extends Thread {
 	}
 
 	public void run() {
+		System.out.println("REPAIR: Repair supervisor thread starting");
 		while (!isTerminated) {
 			RepairRequest rr = this.requests.pollLast();
 			if (rr == null)

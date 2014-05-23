@@ -43,4 +43,11 @@ public class JSONBaseConfiguration {
 	 */
 	public String seriesdata_repair_path;
 	
+	
+	/**
+	 * Amount of seconds, which need to pass from
+	 * tombstoning a series to it's metadata removal
+	 */
+	public int gc_grace_period;
+	
 }
