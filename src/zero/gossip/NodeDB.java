@@ -179,8 +179,24 @@ public class NodeDB implements Cloneable {
 	 */
 	public NodeDB.NodeInfo[] getResponsibleNodes(String name, int replicas) {
 		NodeDB.NodeInfo[] ls = new NodeDB.NodeInfo[replicas];
-		for (int i=0; i<replicas; i++)
+		
+		boolean am_i_responsible_for_this_series = false;
+		
+		for (int i=0; i<replicas; i++) {
 			ls[i] = this.getResponsibleNode(H.hash(name, i));
+			if (ls[i].isLocal) am_i_responsible_for_this_series = true;
+		}
+		
+		if (am_i_responsible_for_this_series)
+			// reorder so that I'm a first entry in the array...
+			if (!ls[0].isLocal)
+				for (int i=1; i<replicas; i++)
+					if (ls[i].isLocal) {
+						NodeDB.NodeInfo previously_zero = ls[0];
+						ls[0] = ls[i];
+						ls[i] = previously_zero;
+					}
+
 		return ls;		
 	}
 	

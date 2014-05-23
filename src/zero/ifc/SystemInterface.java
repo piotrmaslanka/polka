@@ -26,7 +26,10 @@ public interface SystemInterface extends Closeable {
 	public void updateDefinition(SeriesDefinition sd) throws LinkBrokenException, IOException;
 	
 	/**
-	 * Obtains a definition of a given series
+	 * Obtains a definition of a given series.
+	 * 
+	 * This attempts to obtain a consensus answer - it may be slow, but it will be sure.
+	 * 
 	 * @param name name of the series
 	 * @return definition of given series, or null if it doesn't exist
 	 * @throws LinkBrokenException link to this interface was broken, attempt to reestablish it anew
@@ -50,6 +53,9 @@ public interface SystemInterface extends Closeable {
 	 * Gets target series' operational head (up to this head the series is readable).
 	 * Series may contain newer data in it's Write-Ahead, but it may not be readable.
 	 * -1 when series is empty.
+	 * 
+	 * This attempts to obtain a consensus answer - it may be slow, but it will be sure.
+	 * 
 	 * @param sd descriptor of target series. Must be alive.
 	 * @return series' head
 	 * @throws LinkBrokenException link to this interface was broken, attempt to reestablish it anew

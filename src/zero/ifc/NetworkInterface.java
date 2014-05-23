@@ -10,6 +10,11 @@ import java.nio.channels.WritableByteChannel;
 
 import zero.store.SeriesDefinition;
 
+/**
+ * Interface that serves local network requests - it. requests targeted to a single node.
+ * 
+ * Node asked via this interface will attempt to satisfy the request WITHOUT contacting other nodes.
+ */
 public class NetworkInterface implements SystemInterface {
 
 	private Socket sock;
