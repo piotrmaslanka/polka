@@ -65,6 +65,15 @@ public class GossipInbound extends WorkUnit {
 				new GossipOutbound(gam, NodeDB.getInstance().getNodeByInetAddress(source)).run();
 			}
 		}
+		
+		if (m instanceof GossipHeartbeat) {
+			// Do I know the sender?
+			if (NodeDB.getInstance().getNodeByInetAddress(source) == null) {
+				// I don't know this node! I will sent a GossipAdvertise with my database and a spillback request...
+				GossipAdvertise gam = GossipAdvertise.from_nodeinfo(NodeDB.getInstance().dump(), true);
+				new GossipOutbound(gam, ((GossipHeartbeat)m).sendersData).run();				
+			}
+		}
 	}
 	
 	@Override
