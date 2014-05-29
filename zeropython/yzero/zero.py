@@ -66,6 +66,7 @@ class Zero(object):
         self.orders.appendleft(UpdateDefinition(defn, callback))
         if self.state == 0: self.__connect()
         if self.state == 2: self.__execute()
+        return self
             
     def getDefinition(self, sernam, callback: callable):
         """callback will be called with:
@@ -76,6 +77,7 @@ class Zero(object):
         self.orders.appendleft(GetDefinition(sernam, callback))
         if self.state == 0: self.__connect()
         if self.state == 2: self.__execute()
+        return self
         
     def getHeadTimestamp(self, sd, callback):
         """callback will be called with a False if operation failed,
@@ -83,12 +85,14 @@ class Zero(object):
         self.orders.appendleft(GetHeadTimestamp(sd, callback))
         if self.state == 0: self.__connect()
         if self.state == 2: self.__execute()
+        return self
     
     def writeSeries(self, sd, prev_timestamp, cur_timestamp, data, callback):
         """callback will be called with a bool whether the operation completed successfully"""
         self.orders.appendleft(Write(sd, prev_timestamp, cur_timestamp, data, callback))
         if self.state == 0: self.__connect()
         if self.state == 2: self.__execute()
+        return self
             
     def readSeries(self, sd, from_, to, callbackOnData, callbackOnEnd):
         """
@@ -97,4 +101,6 @@ class Zero(object):
         """
         self.orders.appendleft(Read(sd, from_, to, callbackOnData, callbackOnEnd))
         if self.state == 0: self.__connect()
+        if self.state == 2: self.__execute()
+        return self
     
