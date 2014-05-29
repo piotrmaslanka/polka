@@ -61,7 +61,7 @@ class Zero(object):
         self._curNS.write(self.orders[-1].serialize())
         self.state = 3
         
-    def updateDefinition(self, defn, callback: callable):
+    def updateDefinition(self, defn, callback: callable=lambda x: None):
         """callback will be called with a bool whether the operation completed successfully"""
         self.orders.appendleft(UpdateDefinition(defn, callback))
         if self.state == 0: self.__connect()
@@ -87,7 +87,7 @@ class Zero(object):
         if self.state == 2: self.__execute()
         return self
     
-    def writeSeries(self, sd, prev_timestamp, cur_timestamp, data, callback):
+    def writeSeries(self, sd, prev_timestamp, cur_timestamp, data, callback=lambda x: None):
         """callback will be called with a bool whether the operation completed successfully"""
         self.orders.appendleft(Write(sd, prev_timestamp, cur_timestamp, data, callback))
         if self.state == 0: self.__connect()
