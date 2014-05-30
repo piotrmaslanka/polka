@@ -57,7 +57,6 @@ class Zero(object):
         
     def __execute(self):
         """Called when state is 2 and a new order can be scheduled"""
-        print("Executing ", self.orders[-1])
         self._curNS.write(self.orders[-1].serialize())
         self.state = 3
         
