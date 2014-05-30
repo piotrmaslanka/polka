@@ -146,10 +146,10 @@ class Read(object):
                 timestamp, = struct.unpack('>q', buf[:8])
                 if timestamp != -1:
                     # this is legitimate data
-                    if len(buf) < (8+self.sd.recordsize):
+                    if len(buf) < (8+self.defn.recordsize):
                         break
-                    legit_data.append((timestamp, buf[8:8+self.sd.recordsize]))
-                    del buf[:8+self.sd.recordsize]
+                    legit_data.append((timestamp, buf[8:8+self.defn.recordsize]))
+                    del buf[:8+self.defn.recordsize]
                 else:
                     del buf[:8]
                     # end of data
