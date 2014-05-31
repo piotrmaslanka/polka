@@ -44,6 +44,11 @@ class Zero(object):
             
     def _onData(self, sock, data):
         self.buf.extend(data)
+        # it may be order empty --- wuuuuuutttt???? Still, happened to me once
+        if len(self.orders) == 0:
+            self.buf = bytearray()
+            return
+
         if self.orders[-1].execute(self.buf):
             self.orders.pop()
             self.state = 2
