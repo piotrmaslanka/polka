@@ -17,7 +17,7 @@ public class ClientInterface implements SystemInterface {
 	private final static int MAX_REPLICAS = 4;
 	
 	public void writeSeries(SeriesDefinition serdef, long prev_timestamp, long cur_timestamp, byte[] data) throws LinkBrokenException, IllegalArgumentException, IOException, SeriesNotFoundException, IllegalArgumentException, DefinitionMismatchException {
-		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodes(serdef.seriesName, serdef.replicaCount);
+		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodesWithReorder(serdef.seriesName, serdef.replicaCount);
 
 		int successes = 0;
 		
@@ -166,7 +166,7 @@ public class ClientInterface implements SystemInterface {
 			IOException, SeriesNotFoundException, DefinitionMismatchException,
 			IllegalArgumentException {
 		
-		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodes(sd.seriesName, sd.replicaCount);
+		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodesWithReorder(sd.seriesName, sd.replicaCount);
 
 		for (NodeDB.NodeInfo ni : nodes) {
 			if (!ni.alive) continue;
