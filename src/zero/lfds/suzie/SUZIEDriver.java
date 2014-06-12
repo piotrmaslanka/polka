@@ -189,7 +189,7 @@ public class SUZIEDriver implements LFDDriver {
 		Vector<String> result = new Vector<>();
 		DirectoryStream<Path> ds = Files.newDirectoryStream(this.base_directory);
 		for (Path path : ds) {
-			result.add(path.toString());
+			result.add(path.getFileName().toString());
 			System.out.println(path.toString());
 		}
 		ds.close();

@@ -65,7 +65,7 @@ public class SUZIESeries implements LFDSeries {
 		
 		this.slabsize = 16777216 / (8 + recsize);
 
-		long maximum = -Long.MIN_VALUE;
+		long maximum = Long.MIN_VALUE;
 		DirectoryStream<Path> ds = Files.newDirectoryStream(this.seriespath);
 		for (Path path : ds) {
 			try {

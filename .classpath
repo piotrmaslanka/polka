@@ -5,33 +5,5 @@
 	<classpathentry kind="lib" path="D:/projects/zero/libs/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="D:/projects/zero/libs/commons-io-2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-1.2-api-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-1.2-api-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-1.2-api-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-api-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-api-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-api-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-core-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-core-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-core-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-core-2.0-rc1-tests.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-flume-ng-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-flume-ng-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-flume-ng-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-jcl-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-jcl-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-jcl-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-jmx-gui-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-jmx-gui-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-jmx-gui-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-slf4j-impl-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-slf4j-impl-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-slf4j-impl-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-taglib-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-taglib-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-taglib-2.0-rc1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-to-slf4j-2.0-rc1.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-to-slf4j-2.0-rc1-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/projects/zero/libs/log4j-to-slf4j-2.0-rc1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

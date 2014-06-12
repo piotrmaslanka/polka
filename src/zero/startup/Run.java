@@ -35,6 +35,8 @@ public class Run {
 				).executeAsThread();
 		
 		
-		while (true) Thread.sleep(10000);
+		while (true) {
+			Thread.sleep(10000);
+		}
 	}
 }

@@ -55,7 +55,7 @@ public class GossipInbound extends WorkUnit {
 			NodeDB.NodeInfo[] nodes = new NodeDB.NodeInfo[ga.nodes.length];
 			for (int i=0; i<ga.nodes.length; i++)
 				nodes[i] = ga.nodes[i].toNodeInfo();
-			
+
 			NodeDB.getInstance().update(nodes);
 				
 			if (ga.spillback) {			
@@ -65,20 +65,22 @@ public class GossipInbound extends WorkUnit {
 			}
 		}
 		
-		if (m instanceof GossipHeartbeat) {
+		if (m instanceof GossipHeartbeat)
 			// Do I know the sender?
 			if (NodeDB.getInstance().getNodeByInetAddress(source) == null) {
 				// I don't know this node! I will sent a GossipAdvertise with my database and a spillback request...
 				GossipAdvertise gam = GossipAdvertise.from_nodeinfo(NodeDB.getInstance().dump(), true);
 				new GossipOutbound(gam, ((GossipHeartbeat)m).sendersData).run();				
 			}
-		}
+
 	}
 	
 	@Override
 	public void run() {
 		try {
 			this.runLogic();
-		} catch (IOException | ClassNotFoundException e) {}
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 }
