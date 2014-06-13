@@ -19,9 +19,8 @@ public class FailureDetector {
 	/**
 	 * Called upon a failure to communicate with target node
 	 * @param nodehash hash of node that communication was attempted to
-	 * TODO: not threadsafe but what
 	 */
-	public void onFailure(final long nodehash) {
+	public synchronized void onFailure(final long nodehash) {
 		Integer cntr = this.watchlist.get(nodehash);
 		if (cntr == null) {
 			this.watchlist.put(nodehash, 1);
@@ -38,7 +37,7 @@ public class FailureDetector {
 	 * Called upon a success to communicate with target node
 	 * @param nodehash hash of node that communication with succeeded
 	 */
-	public void onSuccess(long nodehash) {
+	public synchronized void onSuccess(long nodehash) {
 		this.watchlist.remove(nodehash);
 		NodeDB.getInstance().onAlivenessChange(nodehash, true);
 	}
