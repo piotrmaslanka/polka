@@ -204,7 +204,7 @@ public class NodeDB implements Cloneable {
 	 * Gets responsible nodes with reorder so that local node is first - if possible
 	 */
 	public NodeDB.NodeInfo[] getResponsibleNodesWithReorder(String name, int replicas) {
-		NodeDB.NodeInfo[] ls = this.getResponsibleNodes(name, replica);
+		NodeDB.NodeInfo[] ls = this.getResponsibleNodes(name, replicas);
 		
 		int localIndex = -1;
 		for (int i=0; i<ls.length; i++)
@@ -216,8 +216,8 @@ public class NodeDB implements Cloneable {
 		if (localIndex == -1) return ls;	// no local node
 		
 		NodeDB.NodeInfo prev = ls[0];
-		ls[0] = ls[i];
-		ls[i] = prev;
+		ls[0] = ls[localIndex];
+		ls[localIndex] = prev;
 		
 		return ls;	// ok, reordered :)
 	}
