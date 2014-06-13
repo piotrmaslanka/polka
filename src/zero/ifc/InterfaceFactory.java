@@ -19,7 +19,12 @@ public class InterfaceFactory {
 		if (nodeifc.isLocal)
 			return new LocalInterface();
 		else
-			return new NetworkInterface(nodeifc.nodecomms);
+			return new NetworkInterface(nodeifc.nodecomms, nodeifc);
+	}
+	
+	
+	static public void returnConnection(NodeDB.NodeInfo ni, NetworkInterface nifc) throws IOException {
+		nifc.sock.close();
 	}
 
 }

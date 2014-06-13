@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
+import zero.gossip.NodeDB;
 import zero.store.SeriesDefinition;
 
 /**
@@ -17,14 +18,17 @@ import zero.store.SeriesDefinition;
  */
 public class NetworkInterface implements SystemInterface {
 
-	private Socket sock;
+	private NodeDB.NodeInfo nifc;
+	protected Socket sock;
 	private DataInputStream dis;
 	private DataOutputStream dos;
 	
 	/**
 	 * Connect to target node.
 	 */
-	public NetworkInterface(InetSocketAddress addr) throws IOException {
+	public NetworkInterface(InetSocketAddress addr, NodeDB.NodeInfo nifc) throws IOException {
+		this.nifc = nifc;
+		
 		this.sock = new Socket();
 		this.sock.connect(addr, 5000);
 		this.sock.setSoTimeout(10000);
@@ -38,7 +42,7 @@ public class NetworkInterface implements SystemInterface {
 	
 	@Override
 	public void close() throws IOException {
-		this.sock.close();
+		InterfaceFactory.returnConnection(nifc, this);
 	}
 	
 	@Override
