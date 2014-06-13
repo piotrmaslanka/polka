@@ -50,4 +50,9 @@ public class JSONBaseConfiguration {
 	 */
 	public int gc_grace_period;
 	
+	/**
+	 * Amount of series to keep in memory at once
+	 */
+	public int series_in_memory;
+	
 }

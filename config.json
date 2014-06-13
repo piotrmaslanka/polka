@@ -11,6 +11,8 @@
 	"seriesmeta_path": "D:\\zero\\meta",
 	"seriesdata_repair_path": "D:\\zero\\partials",
 	
-	"gc_grace_period": 300
+	"gc_grace_period": 300,
+	
+	"series_in_memory": 10
 	
 }

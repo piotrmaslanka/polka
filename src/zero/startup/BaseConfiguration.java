@@ -45,6 +45,8 @@ public class BaseConfiguration {
 	
 	public int gc_grace_period;
 	
+	public int series_in_memory;
+	
 	// -------------------- derived from configuration
 	
 	/**

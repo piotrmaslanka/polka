@@ -9,6 +9,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import zero.gossip.NodeDB;
+import zero.startup.ConfigManager;
 
 /**
  * A complex manager of all series.
@@ -105,14 +106,22 @@ public class SeriesDB {
 	/**
 	 * Compacts memory.
 	 * 
-	 * Evicts a single zero-refcount controller for now
+	 * Run synchronized!
 	 */
 	public void compactMemory() throws IOException {
-		for (SeriesController sc : this.controllers.values()) {
-			if (this.refcount.get(sc.series.seriesName) == 0) {
-				sc.physicalClose();
-				this.refcount.remove(sc.series.seriesName);
-				this.controllers.remove(sc.series.seriesName);
+		
+		boolean something_evicted = true;
+				
+		while (something_evicted) {
+			something_evicted = false;
+			
+			for (SeriesController sc : this.controllers.values()) {
+				if (this.refcount.get(sc.series.seriesName) == 0) {
+					sc.physicalClose();
+					this.refcount.remove(sc.series.seriesName);
+					this.controllers.remove(sc.series.seriesName);
+					something_evicted = true;
+				}
 			}
 		}
 	}
@@ -177,6 +186,10 @@ public class SeriesDB {
 				} else {
 					// Else just un-cache
 					this.refcount.put(seriesName, 0);
+					
+					if (this.refcount.size() > ConfigManager.get().series_in_memory)
+						// run a garbage collection
+						this.compactMemory();											
 				}
 
 			} else {
