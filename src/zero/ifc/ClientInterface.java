@@ -3,6 +3,7 @@ package zero.ifc;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
+import zero.gossip.FailureDetector;
 import zero.gossip.NodeDB;
 import zero.store.SeriesDefinition;
 import zero.H;
@@ -28,6 +29,7 @@ public class ClientInterface implements SystemInterface {
 			try {
 				sin = InterfaceFactory.getInterface(ni);
 			} catch (IOException e) {
+				FailureDetector.getInstance().onFailure(ni.nodehash);				
 				continue;
 			}
 			
@@ -35,7 +37,7 @@ public class ClientInterface implements SystemInterface {
 				sin.writeSeries(serdef, prev_timestamp, cur_timestamp, data);
 				successes++;
 			} catch (LinkBrokenException | IOException e) {
-				//
+				FailureDetector.getInstance().onFailure(ni.nodehash);
 			} catch (DefinitionMismatchException | SeriesNotFoundException e) {
 				throw e;	// someone has newer than we do
 			} catch (IllegalArgumentException e) {
@@ -62,6 +64,7 @@ public class ClientInterface implements SystemInterface {
 			try {
 				sin = InterfaceFactory.getInterface(ni);
 			} catch (IOException e) {
+				FailureDetector.getInstance().onFailure(ni.nodehash);				
 				continue;
 			}
 			
@@ -70,7 +73,7 @@ public class ClientInterface implements SystemInterface {
 				successes++;
 				if (head > max_head) max_head = head;
 			} catch (LinkBrokenException | IOException e) {
-				// pass
+				FailureDetector.getInstance().onFailure(ni.nodehash);
 			} catch (DefinitionMismatchException e) {
 				throw new DefinitionMismatchException();	// someone has a newer definition than we have!
 			} catch (SeriesNotFoundException e) {
@@ -102,6 +105,7 @@ public class ClientInterface implements SystemInterface {
 			try {
 				ifc = InterfaceFactory.getInterface(node_responsible);
 			} catch (IOException e) {
+				FailureDetector.getInstance().onFailure(node_responsible.nodehash);				
 				replica_no++;
 				continue;
 			}					
@@ -116,6 +120,7 @@ public class ClientInterface implements SystemInterface {
 					current_gen = sdc.generation;
 				}
 			} catch (LinkBrokenException exc) {
+				FailureDetector.getInstance().onFailure(node_responsible.nodehash);
 				continue;
 			} finally {
 				replica_no++;
@@ -140,6 +145,7 @@ public class ClientInterface implements SystemInterface {
 			try {
 				ifc = InterfaceFactory.getInterface(node_responsible);
 			} catch (IOException e) {
+				FailureDetector.getInstance().onFailure(node_responsible.nodehash);
 				continue;
 			}		
 			
@@ -147,7 +153,7 @@ public class ClientInterface implements SystemInterface {
 				ifc.updateDefinition(sd);
 				any_update_succeeded = true;
 			} catch (LinkBrokenException | IOException e) {
-				// they will fault recover later
+				FailureDetector.getInstance().onFailure(node_responsible.nodehash);
 				continue;
 			} finally {
 				ifc.close();
@@ -182,6 +188,7 @@ public class ClientInterface implements SystemInterface {
 				sin.read(sd, from, to, channel);
 				return;
 			} catch (LinkBrokenException | IOException e) {
+				FailureDetector.getInstance().onFailure(ni.nodehash);				
 				continue;
 			} catch (DefinitionMismatchException | SeriesNotFoundException e) {
 				throw e;	// someone has newer than we do
