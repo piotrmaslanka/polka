@@ -49,7 +49,6 @@ public class InterfaceFactory {
 		Vector<NetworkInterface> vni = pool.get(ni.nodehash);
 		if (vni == null) { vni = new Vector<NetworkInterface>(); pool.put(ni.nodehash, vni); }
 		vni.add(nifc);
-		returnConnectionFailed(ni, nifc);
 	}
 	
 	/**
