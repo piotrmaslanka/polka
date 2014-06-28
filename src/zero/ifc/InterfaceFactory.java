@@ -55,7 +55,6 @@ public class InterfaceFactory {
 	 * This returns a connection with a hint that it has failed
 	 */
 	static public synchronized void returnConnectionFailed(NodeDB.NodeInfo ni, NetworkInterface nifc) throws IOException {
-		System.out.println("Returning failed connection");
 		nifc.physicalClose();
 	}
 

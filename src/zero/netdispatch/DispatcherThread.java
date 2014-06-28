@@ -21,8 +21,6 @@ public class DispatcherThread extends Thread {
 		ServerSocketChannel sc = ServerSocketChannel.open();
 		sc.bind(ConfigManager.get().node_interface);
 		
-		System.out.println("DISPATCHER: Dispatcher thread started");
-		
 		while (!Thread.interrupted())
 			new DispatchSingleConnection(sc.accept()).executeAsThread();
 	}
@@ -35,7 +33,6 @@ public class DispatcherThread extends Thread {
 		  catch (IOException e) {
 			  e.printStackTrace();
 		  }
-		System.out.println("DISPATCHER: Dispatcher thread stopped");	
 	}
 
 }

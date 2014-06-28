@@ -92,14 +92,12 @@ public class SeriesController implements Closeable {
 		
  		if (previousTimestamp == rootserTimestamp) {
 			// this is a standard LFD-serializable
- 			System.out.format("Standard write: %s at (%d, %d)\n", this.series.seriesName, previousTimestamp, currentTimestamp);
 			this.primary_storage.write(currentTimestamp, value);
  			this.wacon.signalWrite(currentTimestamp);
  			
  			if (this.series.autoTrim > 0)
  				this.primary_storage.trim(currentTimestamp - this.series.autoTrim);
  		} else { 			
- 			System.out.format("WACON write: %s at (%d, %d)\n", this.series.seriesName, previousTimestamp, currentTimestamp);
  			this.wacon.write(previousTimestamp, currentTimestamp, value);
 			// Now we need to signal that this series needs a repair...
 			ReparatorySupervisorThread.getInstance().postRequest(new RepairRequest(this.series, this.primary_storage.getHeadTimestamp(), previousTimestamp));

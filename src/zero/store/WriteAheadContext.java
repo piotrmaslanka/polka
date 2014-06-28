@@ -185,7 +185,6 @@ public class WriteAheadContext {
 			byte[] ba = buf.array();		// get the backing array
 			
 			while (data.fetch(timestamps, buf, 1) == 1) {
-				System.out.format("Transcription(LL): %s at %d\n", this.sernfo.seriesName, timestamps[0]);
 				this.primary_storage.write(timestamps[0], ba);
 				buf.clear();
 			}
@@ -224,7 +223,6 @@ public class WriteAheadContext {
 				// get next timestamp, because next time this if is called
 				// it will make sense
 				timestamp = this.partials.get(0).getHeadTimestamp();
-				System.out.format("Partial transcribed: %s at %d\n", this.sernfo.seriesName, timestamp);
 				this.transcribePartial(0);				
 			}
 			else

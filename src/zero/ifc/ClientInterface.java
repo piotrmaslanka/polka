@@ -47,8 +47,6 @@ public class ClientInterface implements SystemInterface {
 				} finally {
 					sin.close();
 				}
-				
-				System.out.println("Continuing!!");
 			}
 		}
 		
