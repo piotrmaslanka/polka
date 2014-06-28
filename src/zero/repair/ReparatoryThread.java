@@ -7,6 +7,7 @@ import java.nio.channels.WritableByteChannel;
 
 import zero.gossip.NodeDB;
 import zero.ifc.DefinitionMismatchException;
+import zero.ifc.InterfaceFactory;
 import zero.ifc.LinkBrokenException;
 import zero.ifc.NetworkInterface;
 import zero.ifc.SeriesNotFoundException;
@@ -114,7 +115,7 @@ public class ReparatoryThread extends Thread {
 				
 				SystemInterface nifc = null;
 				try {
-					nifc = new NetworkInterface(ni.nodecomms);
+					nifc = InterfaceFactory.getInterface(ni);
 				} catch (IOException e) {
 					continue;
 				}

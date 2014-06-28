@@ -19,30 +19,44 @@ import zero.store.SeriesDefinition;
 public class NetworkInterface implements SystemInterface {
 
 	private NodeDB.NodeInfo nifc;
-	protected Socket sock;
+	private Socket sock;
 	private DataInputStream dis;
 	private DataOutputStream dos;
+	
+	private boolean failed = false;
 	
 	/**
 	 * Connect to target node.
 	 */
 	public NetworkInterface(InetSocketAddress addr, NodeDB.NodeInfo nifc) throws IOException {
-		this.nifc = nifc;
-		
-		this.sock = new Socket();
-		this.sock.connect(addr, 5000);
-		this.sock.setSoTimeout(10000);
-		
-		this.dis = new DataInputStream(this.sock.getInputStream());
-		this.dos = new DataOutputStream(this.sock.getOutputStream());
-		
-		this.dos.writeByte((byte)2);
-		this.dos.flush();
+		try {
+			this.nifc = nifc;
+			
+			this.sock = new Socket();
+			this.sock.connect(addr, 5000);
+			this.sock.setSoTimeout(10000);
+			
+			this.dis = new DataInputStream(this.sock.getInputStream());
+			this.dos = new DataOutputStream(this.sock.getOutputStream());
+			
+			this.dos.writeByte((byte)2);
+			this.dos.flush();
+		} catch (IOException e) {
+			this.failed = true;
+			throw e;
+		}
 	}
 	
 	@Override
 	public void close() throws IOException {
-		InterfaceFactory.returnConnection(nifc, this);
+		if (this.failed) 
+			InterfaceFactory.returnConnectionFailed(nifc, this);
+		else
+			InterfaceFactory.returnConnection(nifc, this);
+	}
+	
+	public void physicalClose() throws IOException {
+		this.sock.close();
 	}
 	
 	@Override
@@ -64,8 +78,10 @@ public class NetworkInterface implements SystemInterface {
 			if (result == 4) throw new IllegalArgumentException();
 			throw new IOException();
 		} catch (IOException e) {
+			this.failed = true;
 			throw new LinkBrokenException();
 		} catch (RuntimeException e) {
+			this.failed = true;
 			throw new IOException();
 		}
 	}
@@ -87,8 +103,10 @@ public class NetworkInterface implements SystemInterface {
 			else
 				throw new IOException();			
 		} catch (IOException e) {
+			this.failed = true;
 			throw new LinkBrokenException();
 		} catch (RuntimeException e) {
+			this.failed = true;
 			throw new IOException();
 		}
 	}
@@ -107,8 +125,10 @@ public class NetworkInterface implements SystemInterface {
 			else
 				throw new IOException();			
 		} catch (IOException e) {
+			this.failed = true;
 			throw new LinkBrokenException();
 		} catch (RuntimeException e) {
+			this.failed = true;
 			throw new IOException();
 		}
 	}
@@ -127,8 +147,10 @@ public class NetworkInterface implements SystemInterface {
 			else
 				throw new IOException();
 		} catch (IOException e) {
+			this.failed = true;
 			throw new LinkBrokenException();
 		} catch (RuntimeException e) {
+			this.failed = true;
 			throw new IOException();
 		}
 	}
@@ -172,8 +194,10 @@ public class NetworkInterface implements SystemInterface {
 			channel.write(record);
 
 		} catch (IOException e) {
+			this.failed = true;
 			throw new LinkBrokenException();
 		} catch (RuntimeException e) {
+			this.failed = true;
 			throw new IOException();
 		}
 	}

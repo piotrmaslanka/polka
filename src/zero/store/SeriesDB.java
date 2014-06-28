@@ -121,6 +121,7 @@ public class SeriesDB {
 					this.refcount.remove(sc.series.seriesName);
 					this.controllers.remove(sc.series.seriesName);
 					something_evicted = true;
+					break;	// needed - this modifies this.controllers!!!
 				}
 			}
 		}

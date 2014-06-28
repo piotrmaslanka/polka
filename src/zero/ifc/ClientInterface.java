@@ -25,25 +25,30 @@ public class ClientInterface implements SystemInterface {
 		for (NodeDB.NodeInfo ni : nodes) {
 			if (!ni.alive) continue;
 	
-			SystemInterface sin = null;
-			try {
-				sin = InterfaceFactory.getInterface(ni);
-			} catch (IOException e) {
-				FailureDetector.getInstance().onFailure(ni.nodehash);				
-				continue;
-			}
-			
-			try {
-				sin.writeSeries(serdef, prev_timestamp, cur_timestamp, data);
-				successes++;
-			} catch (LinkBrokenException | IOException e) {
-				FailureDetector.getInstance().onFailure(ni.nodehash);
-			} catch (DefinitionMismatchException | SeriesNotFoundException e) {
-				throw e;	// someone has newer than we do
-			} catch (IllegalArgumentException e) {
-				throw e;
-			} finally {
-				sin.close();
+			for (int i=0; i<2; i++) {				// for retries in case of failure
+				SystemInterface sin = null;
+				try {
+					sin = InterfaceFactory.getInterface(ni);
+				} catch (IOException e) {
+					FailureDetector.getInstance().onFailure(ni.nodehash);				
+					continue;
+				}
+				
+				try {
+					sin.writeSeries(serdef, prev_timestamp, cur_timestamp, data);
+					successes++;
+					break;
+				} catch (LinkBrokenException | IOException e) {
+					FailureDetector.getInstance().onFailure(ni.nodehash);
+				} catch (DefinitionMismatchException | SeriesNotFoundException e) {
+					throw e;	// someone has newer than we do
+				} catch (IllegalArgumentException e) {
+					throw e;
+				} finally {
+					sin.close();
+				}
+				
+				System.out.println("Continuing!!");
 			}
 		}
 		
@@ -60,26 +65,29 @@ public class ClientInterface implements SystemInterface {
 		for (NodeDB.NodeInfo ni : nodes) {
 			if (!ni.alive) continue;
 			
-			SystemInterface sin = null;
-			try {
-				sin = InterfaceFactory.getInterface(ni);
-			} catch (IOException e) {
-				FailureDetector.getInstance().onFailure(ni.nodehash);				
-				continue;
-			}
-			
-			try {
-				long head = sin.getHeadTimestamp(serdef);
-				successes++;
-				if (head > max_head) max_head = head;
-			} catch (LinkBrokenException | IOException e) {
-				FailureDetector.getInstance().onFailure(ni.nodehash);
-			} catch (DefinitionMismatchException e) {
-				throw new DefinitionMismatchException();	// someone has a newer definition than we have!
-			} catch (SeriesNotFoundException e) {
-				throw new SeriesNotFoundException();
-			} finally {
-				sin.close();
+			for (int i=0; i<2; i++) {				// for retries in case of failure
+				SystemInterface sin = null;
+				try {
+					sin = InterfaceFactory.getInterface(ni);
+				} catch (IOException e) {
+					FailureDetector.getInstance().onFailure(ni.nodehash);				
+					continue;
+				}
+				
+				try {
+					long head = sin.getHeadTimestamp(serdef);
+					successes++;
+					if (head > max_head) max_head = head;
+					break;
+				} catch (LinkBrokenException | IOException e) {
+					FailureDetector.getInstance().onFailure(ni.nodehash);
+				} catch (DefinitionMismatchException e) {
+					throw new DefinitionMismatchException();	// someone has a newer definition than we have!
+				} catch (SeriesNotFoundException e) {
+					throw new SeriesNotFoundException();
+				} finally {
+					sin.close();
+				}
 			}
 		}
 		
@@ -101,30 +109,34 @@ public class ClientInterface implements SystemInterface {
 			NodeDB.NodeInfo node_responsible = NodeDB.getInstance().getResponsibleNode(target_hash);
 			if (!node_responsible.alive) continue;
 			
-			SystemInterface ifc = null;
-			try {
-				ifc = InterfaceFactory.getInterface(node_responsible);
-			} catch (IOException e) {
-				FailureDetector.getInstance().onFailure(node_responsible.nodehash);				
-				replica_no++;
-				continue;
-			}					
-			
-			try {
-				SeriesDefinition sdc = ifc.getDefinition(seriesname);
-				did_somebody_answer = true;				
-				if (sdc == null) continue;
+			for (int i=0; i<2; i++) {				// for retries in case of failure
+				SystemInterface ifc = null;
+				try {
+					ifc = InterfaceFactory.getInterface(node_responsible);
+				} catch (IOException e) {
+					FailureDetector.getInstance().onFailure(node_responsible.nodehash);				
+					replica_no++;
+					continue;
+				}					
 				
-				if (current_gen < sdc.generation) {
-					best_known_one = sdc;
-					current_gen = sdc.generation;
+				try {
+					SeriesDefinition sdc = ifc.getDefinition(seriesname);
+					did_somebody_answer = true;				
+					if (sdc == null) continue;
+					
+					if (current_gen < sdc.generation) {
+						best_known_one = sdc;
+						current_gen = sdc.generation;
+					}
+					if (i == 0) replica_no++;
+					break;
+				} catch (LinkBrokenException exc) {
+					FailureDetector.getInstance().onFailure(node_responsible.nodehash);
+					continue;
+				} finally {
+					if (i==1) replica_no++;
+					ifc.close();
 				}
-			} catch (LinkBrokenException exc) {
-				FailureDetector.getInstance().onFailure(node_responsible.nodehash);
-				continue;
-			} finally {
-				replica_no++;
-				ifc.close();
 			}
 		}
 		
@@ -141,22 +153,25 @@ public class ClientInterface implements SystemInterface {
 			NodeDB.NodeInfo node_responsible = NodeDB.getInstance().getResponsibleNode(target_hash);
 			if (!node_responsible.alive) continue;			
 
-			SystemInterface ifc = null;
-			try {
-				ifc = InterfaceFactory.getInterface(node_responsible);
-			} catch (IOException e) {
-				FailureDetector.getInstance().onFailure(node_responsible.nodehash);
-				continue;
-			}		
-			
-			try {
-				ifc.updateDefinition(sd);
-				any_update_succeeded = true;
-			} catch (LinkBrokenException | IOException e) {
-				FailureDetector.getInstance().onFailure(node_responsible.nodehash);
-				continue;
-			} finally {
-				ifc.close();
+			for (int i=0; i<2; i++) {				// for retries in case of failure			
+				SystemInterface ifc = null;
+				try {
+					ifc = InterfaceFactory.getInterface(node_responsible);
+				} catch (IOException e) {
+					FailureDetector.getInstance().onFailure(node_responsible.nodehash);
+					continue;
+				}		
+				
+				try {
+					ifc.updateDefinition(sd);
+					any_update_succeeded = true;
+					break;
+				} catch (LinkBrokenException | IOException e) {
+					FailureDetector.getInstance().onFailure(node_responsible.nodehash);
+					continue;
+				} finally {
+					ifc.close();
+				}
 			}
 		}
 		
@@ -174,7 +189,13 @@ public class ClientInterface implements SystemInterface {
 		
 		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodesWithReorder(sd.seriesName, sd.replicaCount);
 
-		for (NodeDB.NodeInfo ni : nodes) {
+		NodeDB.NodeInfo[] xnodes = new NodeDB.NodeInfo[nodes.length*2];
+		for (int i=0; i<nodes.length; i++) {  // this adds fault tolerance
+			xnodes[i] = nodes[i];
+			xnodes[i+nodes.length] = nodes[i];
+		}
+		
+		for (NodeDB.NodeInfo ni : xnodes) {
 			if (!ni.alive) continue;
 			
 			SystemInterface sin = null;
