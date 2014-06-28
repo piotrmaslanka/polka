@@ -96,12 +96,12 @@ public class ReparatorySupervisorThread extends Thread {
 					try {
 						sercon = SeriesDB.getInstance().getSeries(rr.sd.seriesName);
 						if (!sercon.doesPartialExist(rr.to)) {
+							sercon.close();
 							continue;
 						}
 					} catch (NotFoundException e) {
-						continue;
-					} finally {
 						sercon.close();
+						continue;
 					}
 					ReparatoryThread rt = new ReparatoryThread(sercon, rr.from, rr.to);
 					rt.start();
