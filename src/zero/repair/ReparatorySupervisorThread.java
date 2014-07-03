@@ -70,6 +70,8 @@ public class ReparatorySupervisorThread extends Thread {
 	
 
 	public void run() {
+		String last_repaired = null;
+		
 		System.out.println("REPAIR: Repair supervisor thread starting");
 		int consequent_nothings = 0;
 		while (!isTerminated) {
@@ -90,7 +92,12 @@ public class ReparatorySupervisorThread extends Thread {
 						}
 					}
 				} else {
-					
+					if (rr.sd.seriesName.equals(last_repaired)) {
+						Thread.sleep(2000);
+						last_repaired = null;
+						continue;
+					}
+					last_repaired = rr.sd.seriesName;
 					// does it make sense?
 					SeriesController sercon = null;
 					try {

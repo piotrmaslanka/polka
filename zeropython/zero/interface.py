@@ -71,6 +71,29 @@ class ClientInterface(object):
         elif result == 4:
             raise IllegalArgumentException()
 
+
+    def readHead(self, sd):
+        """None on zero head, tuple (timestamp, data) on data"""
+        self.sock.send('\x05'+sd.toINTP())
+        result = ord(self.sock.recv(1))
+        if result == 1:
+            raise IOException()
+        elif result == 2:
+            raise SeriesNotFoundException()
+        elif result == 3:
+            raise DefinitionMismatchException() 
+        elif result == 4:
+            raise IllegalArgumentException()
+
+        ts, = struct.unpack('>q', self.sock.recv(8))
+        data = None
+        while ts != -1:
+            data = (ts, self.sock.recv(sd.recordsize))
+            ts, = struct.unpack('>q', self.sock.recv(8))
+            
+        return data            
+
+
     def read(self, sd, from_, to):
         self.sock.send('\x04'+sd.toINTP()+struct.pack('>qq', from_, to))
         result = ord(self.sock.recv(1))

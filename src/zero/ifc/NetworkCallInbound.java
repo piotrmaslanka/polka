@@ -109,6 +109,18 @@ public class NetworkCallInbound extends WorkUnit {
 					} catch (IllegalArgumentException e) {
 						dos.writeByte((byte)4);
 					}															
+				} else if (command == 5) {
+					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
+					try {
+						dos.writeByte((byte)0);
+						ifc.readHead(sd, this.sc);
+					} catch (LinkBrokenException | IOException e) {
+						dos.writeByte((byte)1);
+					} catch (SeriesNotFoundException e) {
+						dos.writeByte((byte)2);
+					} catch (DefinitionMismatchException e) {
+						dos.writeByte((byte)3);
+					}
 				}
 				
 				dos.flush();

@@ -201,4 +201,51 @@ public class NetworkInterface implements SystemInterface {
 			throw new IOException();
 		}
 	}
+
+	@Override
+	public void readHead(SeriesDefinition sd, WritableByteChannel channel)
+			throws LinkBrokenException, IOException, SeriesNotFoundException,
+			DefinitionMismatchException {
+		
+		try {
+			this.dos.writeByte((byte)5);
+			sd.toDataStreamasINTPRepresentation(this.dos);
+			
+			int result = this.dis.readByte();
+			if (result == 1) throw new RuntimeException();
+			if (result == 2) throw new SeriesNotFoundException();
+			if (result == 3) throw new DefinitionMismatchException();
+			if (result == 4) throw new IllegalArgumentException();
+			
+			// rolling in
+			long ts = this.dis.readLong();
+			ByteBuffer record = ByteBuffer.allocate(sd.recordSize+8);
+			byte[] rec = new byte[sd.recordSize];
+			while (ts != -1) {
+				record.clear();
+				// roll one record
+				record.putLong(ts);
+				this.dis.readFully(rec);
+				record.put(rec);
+				record.flip();	
+				channel.write(record);
+				
+				// read next timestamp
+				ts = this.dis.readLong();
+			}
+			
+			record.clear();
+			record.putLong(-1);
+			record.flip();
+			channel.write(record);
+
+		} catch (IOException e) {
+			this.failed = true;
+			throw new LinkBrokenException();
+		} catch (RuntimeException e) {
+			this.failed = true;
+			throw new IOException();
+		}
+		
+	}
 }

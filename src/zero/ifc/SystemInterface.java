@@ -65,6 +65,19 @@ public interface SystemInterface extends Closeable {
 	public long getHeadTimestamp(SeriesDefinition seriesname) throws LinkBrokenException, IOException, SeriesNotFoundException, DefinitionMismatchException;
 	
 	/**
+	 * Gets target series' operational head and included data.
+	 * Think of it as a read() that returns only data specified by getHeadTimestamp()
+	 * 
+	 * Return format is
+	 * 	record (8byte big endian TIMESTAMP, binary[recordsize] data) if head != -1
+	 * 	8 byte big endian -1 
+	 * 
+ 	 * @param sd descriptor of target series
+	 * @param channel target channel
+	 */
+	public void readHead(SeriesDefinition sd, WritableByteChannel channel) throws LinkBrokenException, IOException, SeriesNotFoundException, DefinitionMismatchException;
+	
+	/**
 	 * Read data into target output stream.
 	 * 
 	 * Format is

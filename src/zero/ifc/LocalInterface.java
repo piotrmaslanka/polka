@@ -116,4 +116,41 @@ public class LocalInterface implements SystemInterface {
 	
 	@Override
 	public void close() throws IOException {}
+
+
+	@Override
+	public void readHead(SeriesDefinition sd, WritableByteChannel channel)
+			throws LinkBrokenException, IOException, SeriesNotFoundException,
+			DefinitionMismatchException {
+
+		SeriesController ctrl = this.openController(sd);		
+		try {
+			LFDResultSet rs = null;
+			try {
+				long head = ctrl.getHeadTimestamp();
+				rs = ctrl.read(head, Long.MAX_VALUE);
+				// allocate buffers for 1 entry
+				ByteBuffer bb = ByteBuffer.allocateDirect(sd.recordSize+8);
+				
+				if (head != -1) {
+					try {
+						rs.fetch(bb, 1);
+					} catch (LFDDamagedException e) {
+						throw new IOException();
+					}
+					bb.flip();
+					channel.write(bb);
+				}
+				
+				bb.clear();
+				bb.putLong(-1);
+				bb.flip();
+				channel.write(bb);
+			} finally {
+				rs.close();
+			}
+		} finally {
+			ctrl.close();
+		}						
+	}
 }

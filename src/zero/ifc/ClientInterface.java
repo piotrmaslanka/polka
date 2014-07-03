@@ -221,6 +221,47 @@ public class ClientInterface implements SystemInterface {
 		throw new LinkBrokenException();	// nobody home		
 		
 	}
+
+	@Override
+	public void readHead(SeriesDefinition sd, WritableByteChannel channel)
+			throws LinkBrokenException, IOException, SeriesNotFoundException,
+			DefinitionMismatchException {
+		
+		NodeDB.NodeInfo[] nodes = NodeDB.getInstance().getResponsibleNodesWithReorder(sd.seriesName, sd.replicaCount);
+
+		NodeDB.NodeInfo[] xnodes = new NodeDB.NodeInfo[nodes.length*2];
+		for (int i=0; i<nodes.length; i++) {  // this adds fault tolerance
+			xnodes[i] = nodes[i];
+			xnodes[i+nodes.length] = nodes[i];
+		}
+		
+		for (NodeDB.NodeInfo ni : xnodes) {
+			if (!ni.alive) continue;
+			
+			SystemInterface sin = null;
+			try {
+				sin = InterfaceFactory.getInterface(ni);
+			} catch (IOException e) {
+				continue;
+			}			
+			
+			try {
+				sin.readHead(sd, channel);
+				return;
+			} catch (LinkBrokenException | IOException e) {
+				FailureDetector.getInstance().onFailure(ni.nodehash);				
+				continue;
+			} catch (DefinitionMismatchException | SeriesNotFoundException e) {
+				throw e;	// someone has newer than we do
+			} catch (IllegalArgumentException e) {
+				throw e;
+			} finally {
+				sin.close();
+			}
+		}
+		
+		throw new LinkBrokenException();	// nobody home		
+	}
 	
 	
 }
