@@ -1,5 +1,5 @@
 import struct
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET, SOCK_STREAM, error
 from zero.seriesdefinition import SeriesDefinition
 
 class IOException(Exception):
@@ -30,16 +30,26 @@ class ClientInterface(object):
         self.sock.close()
         
     def updateDefinition(self, defn):
-        self.sock.send('\x01'+defn.toINTP())
-        result = ord(self.sock.recv(1))
+        try:
+            self.sock.send('\x01'+defn.toINTP())
+            result = ord(self.sock.recv(1))
+        except (error, TypeError):
+            self.__reconnect()
+            return self.updateDefinition(defn)
+ 
         if result == 0:
             return
         elif result == 1:
             raise IOException()
         
     def getDefinition(self, sernam):
-        self.sock.send('\x00'+struct.pack('>H', len(sernam))+sernam)
-        result = ord(self.sock.recv(1))
+        try:
+            self.sock.send('\x00'+struct.pack('>H', len(sernam))+sernam)
+            result = ord(self.sock.recv(1))
+        except (error, TypeError):
+            self.__reconnect()
+            return self.getDefinition(sernam)
+
         if result == 1:
             raise IOException()
         if result == 2:
@@ -48,8 +58,13 @@ class ClientInterface(object):
             return SeriesDefinition.fromINTP(self.sock.recv(1024))
         
     def getHeadTimestamp(self, sd):
-        self.sock.send('\x02'+sd.toINTP())
-        result = ord(self.sock.recv(1))
+        try:
+            self.sock.send('\x02'+sd.toINTP())
+            result = ord(self.sock.recv(1))
+        except (error, TypeError):
+            self.__reconnect()
+            return self.getHeadTimestamp(sd)            
+            
         if result == 1:
             raise IOException()
         elif result == 2:
@@ -60,8 +75,13 @@ class ClientInterface(object):
             return struct.unpack('>q', self.sock.recv(8))[0]
     
     def writeSeries(self, sd, prev_timestamp, cur_timestamp, data):
-        self.sock.send('\x03'+sd.toINTP()+struct.pack('>qqi', prev_timestamp, cur_timestamp, len(data))+data)
-        result = ord(self.sock.recv(1))
+        try:
+            self.sock.send('\x03'+sd.toINTP()+struct.pack('>qqi', prev_timestamp, cur_timestamp, len(data))+data)
+            result = ord(self.sock.recv(1))
+        except (error, TypeError):
+            self.__reconnect()
+            self.writeSeries(sd, prev_timestamp, cur_timestamp, data)
+
         if result == 1:
             raise IOException()
         elif result == 2:
@@ -74,8 +94,13 @@ class ClientInterface(object):
 
     def readHead(self, sd):
         """None on zero head, tuple (timestamp, data) on data"""
-        self.sock.send('\x05'+sd.toINTP())
-        result = ord(self.sock.recv(1))
+        try:
+            self.sock.send('\x05'+sd.toINTP())
+            result = ord(self.sock.recv(1))
+        except (error, TypeError):
+            self.__reconnect()
+            return self.readHead(sd)
+
         if result == 1:
             raise IOException()
         elif result == 2:
@@ -95,8 +120,13 @@ class ClientInterface(object):
 
 
     def read(self, sd, from_, to):
-        self.sock.send('\x04'+sd.toINTP()+struct.pack('>qq', from_, to))
-        result = ord(self.sock.recv(1))
+        try:
+            self.sock.send('\x04'+sd.toINTP()+struct.pack('>qq', from_, to))
+            result = ord(self.sock.recv(1))
+        except (error, TypeError):
+            self.__reconnect()
+            return self.read(sd, from_, to)
+            
         if result == 1:
             raise IOException()
         elif result == 2:
@@ -106,8 +136,6 @@ class ClientInterface(object):
         elif result == 4:
             raise IllegalArgumentException()
         
-        print 'result was %s' % (result, )
-
         ts, = struct.unpack('>q', self.sock.recv(8))
         dat = []
         while ts != -1:

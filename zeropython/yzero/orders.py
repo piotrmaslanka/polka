@@ -79,6 +79,7 @@ class GetHeadTimestamp(object):
         
         if len(buf) < 9: return False
         statkod, head = struct.unpack('>bq', buf[:9])
+        print("Head timestamp for", self.defn.seriesname, "is", head)
         del buf[:9]
         self.callback(head)
         return True
@@ -101,6 +102,7 @@ class Write(object):
         if len(buf) == 0: return False
         
         statkod = buf[0]
+        print("Write executed with code", statkod)
         del buf[0]
         self.callback(statkod == 0)
         return True
@@ -149,6 +151,7 @@ class Read(object):
                     if len(buf) < (8+self.defn.recordsize):
                         break
                     legit_data.append((timestamp, buf[8:8+self.defn.recordsize]))
+                    print("Readed row in", timestamp, buf[8:8+self.defn.recordsize])
                     del buf[:8+self.defn.recordsize]
                 else:
                     del buf[:8]
@@ -156,6 +159,7 @@ class Read(object):
                     if len(legit_data) > 0:
                         self.onData(legit_data)
                         self.onEnd(True)
+                        print("Minus jeden readed, finishing")
                         return True
             # returning FALSE
             if len(legit_data) > 0:

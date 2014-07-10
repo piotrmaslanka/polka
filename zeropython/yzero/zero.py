@@ -29,8 +29,10 @@ class Zero(object):
         # Is there something I should know?
         if len(self.orders) > 0:
             self.__execute()
+        print("Connected to ZERO")
         
     def _onCloseFail(self, sock):
+        print("Connection DOWN")
         if self.state == 3:
             # a query was running...
             if not self.orders[-1].failed():
@@ -46,10 +48,13 @@ class Zero(object):
         self.buf.extend(data)
         # it may be order empty --- wuuuuuutttt???? Still, happened to me once
         if len(self.orders) == 0:
+            print("Unexpectedly got", data)
             self.buf = bytearray()
             return
 
         if self.orders[-1].execute(self.buf):
+            print("Order", repr(self.orders[-1]), "executed")
+            self.buf = bytearray()  # for now
             self.orders.pop()
             self.state = 2
             if len(self.orders) > 0:
@@ -62,6 +67,7 @@ class Zero(object):
         
     def __execute(self):
         """Called when state is 2 and a new order can be scheduled"""
+        print("Dispatched", self.orders[-1])
         self._curNS.write(self.orders[-1].serialize())
         self.state = 3
         

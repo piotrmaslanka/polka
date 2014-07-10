@@ -154,6 +154,7 @@ public class NodeDB implements Cloneable {
 		NodeDB.NodeInfo n = this.nodedb.get(nodehash);
 		if (n == null) return;
 		if (n.alive == b) return;
+		if ((n.isLocal) && !b) throw new RuntimeException("Local liveness change!!");
 
 		n.timestamp = System.currentTimeMillis();
 		n.alive = b;

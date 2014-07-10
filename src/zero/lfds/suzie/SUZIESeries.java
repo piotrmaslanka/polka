@@ -10,6 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import zero.lfds.LFDDamagedException;
@@ -23,10 +24,10 @@ import zero.lfds.LFDSeries;
  */
 public class SUZIESeries implements LFDSeries {
 
-	private SUZIEDriver driver;
-	private Path seriespath;
-	private String name;
-	private int recsize;
+	final private SUZIEDriver driver;
+	final private Path seriespath;
+	final private String name;
+	final private int recsize;
 	private long head;
 	/**
 	 * The file that will receive the write.
@@ -39,14 +40,14 @@ public class SUZIESeries implements LFDSeries {
 	 * Append-opened file for outputing. Closed if equal to null.
 	 */
 	private FileChannel leadfile_output;
-	private Object leadfile_output_lock = new Object();
+	final private Object leadfile_output_lock = new Object();
 	
 	/**
 	 * Size of single file in records
 	 * 
 	 * By default calculated so that block-files are about 16 MB
 	 */
-	private long slabsize;
+	final private long slabsize;
 	
 	/**
 	 * Pending trim. If null, then no trim is pending. Trim will be executed
@@ -63,8 +64,6 @@ public class SUZIESeries implements LFDSeries {
 		this.recsize = recsize;
 		this.seriespath = this.driver.base_directory.resolve(name);
 		
-		this.slabsize = 16777216 / (8 + recsize);
-
 		long maximum = Long.MIN_VALUE;
 		DirectoryStream<Path> ds = Files.newDirectoryStream(this.seriespath);
 		for (Path path : ds) {
@@ -91,14 +90,18 @@ public class SUZIESeries implements LFDSeries {
 		
 		fc.close();
 
+		long _slabsize = 16777216 / (8 + recsize);
+		
 		// analyze options
 		for (String option : options.split(";")) {
 			if (options.length() == 0) continue;
 			String kv[] = option.split("=");
 			if (kv.length != 2) throw new IllegalArgumentException("error in options");
 			if (kv[0].equals("slabsize"))
-				this.slabsize = Long.parseLong(kv[1]);
+				_slabsize = Long.parseLong(kv[1]);
 		}
+		
+		this.slabsize = _slabsize;
 	}
 
 	@Override
@@ -172,6 +175,8 @@ public class SUZIESeries implements LFDSeries {
 		if (timestamp <= this.head) throw new IllegalArgumentException("invalid timestamp");
 		if (data.length != this.recsize) throw new IllegalArgumentException("data size must be equal to recsize");
 		
+		boolean split_occurred = false;
+		
 		while (this.trim_in_progress) Thread.yield();		
 		
 		// Check whether leadfile requires a split
@@ -183,6 +188,7 @@ public class SUZIESeries implements LFDSeries {
 			this.leadfile_output = FileChannel.open(this.leadfile, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
 
 			this.records_in_lead = 0;
+			split_occurred = true;
 		}
 		
 		ByteBuffer out = ByteBuffer.allocate(8+this.recsize);
@@ -198,6 +204,8 @@ public class SUZIESeries implements LFDSeries {
 		
 		this.records_in_lead++;
 		this.head = timestamp;
+		
+		if (split_occurred) this.executeTrim();
 	}}
 
 	@Override
@@ -252,15 +260,28 @@ public class SUZIESeries implements LFDSeries {
 		this.trim_in_progress = true;
 		
 		DirectoryStream<Path> ds = Files.newDirectoryStream(this.seriespath);
+		Vector<Long> vlong = new Vector<>();
 		for (Path path : ds) {
 			try {
-				Long.parseLong(path.getFileName().toString());
-				Files.delete(path);
+				vlong.add(Long.parseLong(path.getFileName().toString()));
 			} catch (NumberFormatException p) {
 				continue;
 			}
 		}
 		ds.close();
+		
+		Collections.sort(vlong);
+		Collections.reverse(vlong);
+		
+		boolean sweep_mode_engaged = false;
+		for (long s : vlong) {
+			if (s < this.trim_time)
+				if (sweep_mode_engaged)
+					Files.delete(this.seriespath.resolve(new Long(s).toString()));
+				else
+					sweep_mode_engaged = true;
+		}
+		
 		
 		this.trim_time = null;
 		this.trim_in_progress = false;
