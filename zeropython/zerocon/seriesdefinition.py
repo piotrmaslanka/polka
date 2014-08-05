@@ -80,6 +80,8 @@ class SeriesDefinition(object):
             self.__precompileINTP()
         return self._intp
 
+    def _lengthInBytes(self):
+        return len(self.toINTP())
     
     @staticmethod
     def fromINTP(dat):

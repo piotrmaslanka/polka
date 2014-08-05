@@ -22,7 +22,7 @@ public class JSONBaseConfiguration {
 	/** Path to UNIX socket Zero should listen on
 	 * null if UNIX socket should not be initialized
 	 */
-	public String unix_socket_name;
+	public String unix_socket_name = null;
 	
 	/**
 	 * Desired hash of this node
