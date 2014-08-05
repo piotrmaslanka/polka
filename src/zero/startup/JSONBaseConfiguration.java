@@ -18,6 +18,12 @@ public class JSONBaseConfiguration {
 	/** Port of this node's interface */
 	public Integer node_port;
 	
+	
+	/** Path to UNIX socket Zero should listen on
+	 * null if UNIX socket should not be initialized
+	 */
+	public String unix_socket_name;
+	
 	/**
 	 * Desired hash of this node
 	 */

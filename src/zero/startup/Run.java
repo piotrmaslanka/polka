@@ -26,6 +26,10 @@ public class Run {
 		new GarbageCollectionThread().start();
 		DispatcherThread dt = new DispatcherThread();
 		dt.start();
+		if (ConfigManager.get().unix_socket_name != null) {
+			DispatcherThread dtunix = new DispatcherThread(true);
+			dtunix.start();
+		}
 		
 		// Should we bootstrap?
 		if (ConfigManager.get().bootstrap != null)

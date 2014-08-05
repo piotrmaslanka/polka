@@ -52,6 +52,7 @@ public class ConfigManager {
 		b.node_interface = new InetSocketAddress(bc.node_ip, bc.node_port);
 		
 		b.nodehash = bc.nodehash;
+		b.unix_socket_name = bc.unix_socket_name;
 		b.series_in_memory = bc.series_in_memory;
 		b.gc_grace_period = bc.gc_grace_period;
 		b.datapath = Paths.get(bc.seriesdata_path);
