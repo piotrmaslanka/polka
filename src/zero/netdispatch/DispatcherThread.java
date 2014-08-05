@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ServerSocketChannel;
 
-import org.newsclub.net.unix.AFUNIXServerSocket;
-import org.newsclub.net.unix.AFUNIXSocketAddress;
-
 import zero.startup.ConfigManager;
 
 /**
@@ -36,9 +33,15 @@ public class DispatcherThread extends Thread {
 			sc.bind(ConfigManager.get().node_interface);
 		} else {
 			File socketFile = new File(ConfigManager.get().unix_socket_name);
+			socketFile.delete();
+			
+			// TODO: implement this!
+			return;
+			/**
+			socketFile = new File(ConfigManager.get().unix_socket_name);
 			AFUNIXServerSocket sock = AFUNIXServerSocket.newInstance();
 			sock.bind(new AFUNIXSocketAddress(socketFile));
-			sc = sock.getChannel();
+			sc = sock.getChannel();**/
 		}
 		
 		while (!Thread.interrupted())
