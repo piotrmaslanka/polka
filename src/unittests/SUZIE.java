@@ -11,10 +11,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import zero.lfds.LFDDriver;
-import zero.lfds.LFDResultSet;
-import zero.lfds.LFDSeries;
-import zero.lfds.suzie.SUZIEDriver;
+import polka.lfds.LFDDriver;
+import polka.lfds.LFDResultSet;
+import polka.lfds.LFDSeries;
+import polka.lfds.suzie.SUZIEDriver;
 
 /**
  * A general LFD conformance test. Use all LFDs you might want there!

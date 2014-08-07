@@ -2,7 +2,7 @@
 	"bootstrap_node_ip": null,
 	"bootstrap_node_port": null,
 	
-	"node_ip": "10.0.0.103",
+	"node_ip": "10.0.0.102",
 	"node_port": 20,
 	
 	"nodehash": 9223372036854775807,
