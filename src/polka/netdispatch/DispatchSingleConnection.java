@@ -1,12 +1,8 @@
 package polka.netdispatch;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import polka.gossip.GossipInbound;
-import polka.ifc.ClientInterface;
-import polka.ifc.LocalInterface;
 import polka.ifc.NetworkCallInbound;
 import polka.util.WorkUnit;
 
@@ -26,24 +22,7 @@ public class DispatchSingleConnection extends WorkUnit {
 	}
 	
 	public void runLogic() throws IOException {		
-		ByteBuffer c = ByteBuffer.allocate(1);
-		this.sc.read(c);
-		c.flip();
-		switch (c.get()) {
-			case 0:
-				break;
-			case 1:
-				new GossipInbound(this.sc).run();
-				break;
-			case 2:
-				new NetworkCallInbound(this.sc, new LocalInterface()).run();
-				break;
-			case 3:
-				new NetworkCallInbound(this.sc, new ClientInterface()).run();
-				break;
-			default:
-				break;
-		}
+		new NetworkCallInbound(this.sc).run();
 	}
 	
 	@Override

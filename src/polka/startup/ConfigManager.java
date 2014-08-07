@@ -44,20 +44,12 @@ public class ConfigManager {
 		}	
 		BaseConfiguration b = new BaseConfiguration();
 		
-		if ((bc.bootstrap_node_ip == null) || (bc.bootstrap_node_port == null))
-			b.bootstrap = null;
-		else
-			b.bootstrap = new InetSocketAddress(bc.bootstrap_node_ip, bc.bootstrap_node_port);
-
 		b.node_interface = new InetSocketAddress(bc.node_ip, bc.node_port);
 		
-		b.nodehash = bc.nodehash;
 		b.unix_socket_name = bc.unix_socket_name;
 		b.series_in_memory = bc.series_in_memory;
-		b.gc_grace_period = bc.gc_grace_period;
 		b.datapath = Paths.get(bc.seriesdata_path);
 		b.metapath = Paths.get(bc.seriesmeta_path);
-		b.repair_datapath = Paths.get(bc.seriesdata_repair_path);
 		
 		b.storage = new SUZIEDriver(b.datapath);
 		

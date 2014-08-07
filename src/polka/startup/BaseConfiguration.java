@@ -12,20 +12,9 @@ import polka.lfds.LFDDriver;
  */
 public class BaseConfiguration {
 	/**
-	 * bootstrap node address. null if seed node
-	 */
-	public InetSocketAddress bootstrap;
-
-	/**
 	 * this node's interface
 	 */
 	public InetSocketAddress node_interface;
-	
-	/**
-	 * Desired hash of this node
-	 */
-	public long nodehash;
-	
 	
 	/**
 	 * UNIX socket name to listen on, null if none
@@ -41,15 +30,7 @@ public class BaseConfiguration {
 	 * Directory in which time series metadata should be stored
 	 */
 	public Path metapath;
-	
-	/**
-	 * Directory in which parts of damaged time series will be stored
-	*/
-	public Path repair_datapath;
-	
-	
-	public int gc_grace_period;
-	
+
 	public int series_in_memory;
 	
 	// -------------------- derived from configuration

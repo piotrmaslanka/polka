@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.nio.channels.SocketChannel;
 
 import polka.store.SeriesDefinition;
+import polka.store.SeriesDefinitionDB;
 import polka.util.WorkUnit;
 
 /**
@@ -16,11 +17,11 @@ import polka.util.WorkUnit;
 public class NetworkCallInbound extends WorkUnit {
 
 	private SocketChannel sc;
-	private SystemInterface ifc;
+	private LocalInterface ifc;
 	
-	public NetworkCallInbound(SocketChannel sc, SystemInterface ifc) {
+	public NetworkCallInbound(SocketChannel sc) {
 		this.sc = sc;
-		this.ifc = ifc;
+		this.ifc = new LocalInterface();
 	}
 	
 	@Override
@@ -46,7 +47,7 @@ public class NetworkCallInbound extends WorkUnit {
 							dos.writeByte((byte)0);
 							sd.toDataStreamasINTPRepresentation(dos);
 						}
-					} catch (LinkBrokenException | IOException e) {
+					} catch (IOException e) {
 						dos.writeByte((byte)1);
 					}	
 				}
@@ -55,17 +56,17 @@ public class NetworkCallInbound extends WorkUnit {
 					try {
 						ifc.updateDefinition(sd);
 						dos.writeByte((byte)0);
-					} catch (LinkBrokenException | IOException e) {
+					} catch (IOException e) {
 						dos.writeByte((byte)1);
 					}
 				}
 				else if (command == 2) {
-					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
+					String name = dis.readUTF(); 
 					try {
-						long head = ifc.getHeadTimestamp(sd);
+						long head = ifc.getHeadTimestamp(name);
 						dos.writeByte((byte)0);
 						dos.writeLong(head);
-					} catch (LinkBrokenException | IOException e) {
+					} catch (IOException e) {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
@@ -74,16 +75,15 @@ public class NetworkCallInbound extends WorkUnit {
 					}			
 				}
 				else if (command == 3) {
-					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
-					long prevt = dis.readLong();
+					String name = dis.readUTF(); 
 					long curt = dis.readLong();
 					byte[] data = new byte[dis.readInt()];
 					dis.readFully(data);
 					
 					try {
-						ifc.writeSeries(sd, prevt, curt, data);
+						ifc.writeSeries(name, curt, data);
 						dos.writeByte((byte)0);
-					} catch (LinkBrokenException | IOException e) {
+					} catch (IOException e) {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
@@ -93,14 +93,14 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)4);
 					}
 				} else if (command == 4) {
-					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
+					String name = dis.readUTF(); 
 					long from = dis.readLong();
 					long to = dis.readLong();
 					
 					try {
 						dos.writeByte((byte)0);
-						ifc.read(sd, from, to, this.sc);
-					} catch (LinkBrokenException | IOException e) {
+						ifc.read(name, from, to, this.sc);
+					} catch (IOException e) {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
@@ -110,11 +110,11 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)4);
 					}															
 				} else if (command == 5) {
-					SeriesDefinition sd = SeriesDefinition.fromDataStreamasINTPRepresentation(dis);
+					String name = dis.readUTF(); 
 					try {
 						dos.writeByte((byte)0);
-						ifc.readHead(sd, this.sc);
-					} catch (LinkBrokenException | IOException e) {
+						ifc.readHead(name, this.sc);
+					} catch (IOException e) {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);

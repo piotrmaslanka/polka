@@ -10,8 +10,6 @@ import polka.lfds.LFDNotFoundException;
 import polka.lfds.LFDOpenedException;
 import polka.lfds.LFDResultSet;
 import polka.lfds.LFDSeries;
-import polka.repair.RepairRequest;
-import polka.repair.ReparatorySupervisorThread;
 import polka.startup.ConfigManager;
 
 /**
@@ -22,7 +20,6 @@ import polka.startup.ConfigManager;
 public class SeriesController implements Closeable {
 	
 	protected SeriesDefinition series;	// contains info about the series
-	private WriteAheadContext wacon;
 	private LFDSeries primary_storage;			// primary storage	
 	
 	/**
@@ -53,7 +50,6 @@ public class SeriesController implements Closeable {
 	public SeriesController(String name) throws NotFoundException, IOException {
 		this.series = SeriesDefinitionDB.getInstance().getSeries(name);
 		if (this.series == null) throw new NotFoundException();
-		if (this.series.tombstonedOn != 0) throw new NotFoundException();
 
 		LFDSeries series_for_wac;
 		try {
@@ -63,45 +59,23 @@ public class SeriesController implements Closeable {
 			// if there is a definition but not a LFD allocation then something's wrong
 			throw new IOException();
 		}		
-		
-		this.wacon = new WriteAheadContext(this.series, series_for_wac);
-		
 	}
-	
-	/**
-	 * Checks whether a partial with given name exist. This is called by reparatory thread
-	 * @param from partial name
-	 * @return whether partial exists
-	 */
-	public boolean doesPartialExist(long from) {
-		return this.wacon.partialExists(from);
-	}
-	
 	
 	/**
 	 * Adds an entry
-	 * @param previousTimestamp timestamp of previous write
 	 * @param currentTimestamp timestamp of this write
 	 * @param value value to write to DB
 	 * @throws IllegalArgumentException value passsed was malformed
 	 */
-	public synchronized void write(long previousTimestamp, long currentTimestamp, byte[] value) throws IllegalArgumentException, IOException {
+	public synchronized void write(long currentTimestamp, byte[] value) throws IllegalArgumentException, IOException {
 		
 		long rootserTimestamp = this.primary_storage.getHeadTimestamp();
 		if (currentTimestamp <= rootserTimestamp) return;	// just ignore this write
 		
- 		if (previousTimestamp == rootserTimestamp) {
-			// this is a standard LFD-serializable
-			this.primary_storage.write(currentTimestamp, value);
- 			this.wacon.signalWrite(currentTimestamp);
+		this.primary_storage.write(currentTimestamp, value);
  			
- 			if (this.series.autoTrim > 0)
- 				this.primary_storage.trim(currentTimestamp - this.series.autoTrim);
- 		} else { 			
- 			this.wacon.write(previousTimestamp, currentTimestamp, value);
-			// Now we need to signal that this series needs a repair...
-			ReparatorySupervisorThread.getInstance().postRequest(new RepairRequest(this.series, this.primary_storage.getHeadTimestamp(), previousTimestamp));
-		}
+		if (this.series.autoTrim > 0)
+			this.primary_storage.trim(currentTimestamp - this.series.autoTrim);
 	}
 	
 	/**
@@ -137,7 +111,6 @@ public class SeriesController implements Closeable {
 		} catch (LFDOpenedException e) {
 			throw new IllegalStateException();
 		}
-		this.wacon.close();
 	}
 	
 	/**
@@ -150,7 +123,6 @@ public class SeriesController implements Closeable {
 		} catch (LFDNotFoundException | LFDOpenedException e) {
 			throw new IOException("Failed to delete!");
 		}
-		FileUtils.deleteDirectory(ConfigManager.get().repair_datapath.resolve(this.series.seriesName).toFile());
 	}
 	
 }

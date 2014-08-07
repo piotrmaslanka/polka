@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import polka.gossip.NodeDB;
 import polka.startup.ConfigManager;
 
 /**
@@ -65,12 +64,6 @@ public class SeriesDB {
 	 * @return lock you can use to detect when operation was completed
 	 */
 	public Lock redefineAsync(SeriesDefinition sd) throws IOException {	
-		
-		// Am I allowed to define that here?
-		NodeDB.NodeInfo[] responsibles = NodeDB.getInstance().getResponsibleNodes(sd.seriesName, sd.replicaCount);
-		boolean is_resp = false;
-		for (NodeDB.NodeInfo ni : responsibles) is_resp = is_resp || ni.isLocal;
-		if (!is_resp) return new ReentrantLock();	// not responsible, not defining!
 		
 		Lock lock = new ReentrantLock();
 		lock.lock();

@@ -31,22 +31,10 @@ public class SeriesDefinitionDB {
 	 * @param sname series name
 	 */
 	public void deleteSeries(String seriesname) throws IOException {
-		SeriesDefinition sd = this.getSeries(seriesname);
-		sd.generation++;
-		sd.tombstonedOn = System.currentTimeMillis();
-		this.updateSeries(sd);
-	}
-
-	
-	/**
-	 * Deletes series definition data from disk
-	 * @param seriesname series name
-	 */
-	public void __hardDeleteSeries(String seriesname) throws IOException {
 		Files.delete(this.db_root.resolve(seriesname));
 	}
-	
-	/**
+
+		/**
 	 * Updates a series definition.
 	 * @param sd New SD file to serialize in the database
 	 */
