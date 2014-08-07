@@ -70,9 +70,7 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
-					} catch (DefinitionMismatchException e) {
-						dos.writeByte((byte)3);
-					}			
+					}		
 				}
 				else if (command == 3) {
 					String name = dis.readUTF(); 
@@ -87,8 +85,6 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
-					} catch (DefinitionMismatchException e) {
-						dos.writeByte((byte)3);
 					} catch (IllegalArgumentException e) {
 						dos.writeByte((byte)4);
 					}
@@ -104,8 +100,6 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
-					} catch (DefinitionMismatchException e) {
-						dos.writeByte((byte)3);
 					} catch (IllegalArgumentException e) {
 						dos.writeByte((byte)4);
 					}															
@@ -118,8 +112,16 @@ public class NetworkCallInbound extends WorkUnit {
 						dos.writeByte((byte)1);
 					} catch (SeriesNotFoundException e) {
 						dos.writeByte((byte)2);
-					} catch (DefinitionMismatchException e) {
-						dos.writeByte((byte)3);
+					}
+				} else if (command == 6) {
+					String name = dis.readUTF();
+					try {
+						ifc.deleteSeries(name);
+						dos.writeByte((byte)0);
+					} catch (IOException e) {
+						dos.writeByte((byte)1);
+					} catch (SeriesNotFoundException e) {
+						dos.writeByte((byte)2);
 					}
 				}
 				

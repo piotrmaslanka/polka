@@ -1,5 +1,5 @@
 from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException
+from polkacon.exceptions import IOException, SeriesNotFoundException
 import struct
 
 class ReadHead(BaseOrder):
@@ -32,9 +32,6 @@ class ReadHead(BaseOrder):
             del buffer[0]
         elif buffer[0] == 2:
             self.result = SeriesNotFoundException()            
-            del buffer[0]
-        elif buffer[0] == 3:
-            self.result = DefinitionMismatchException()
             del buffer[0]
 
         self.is_completed = True

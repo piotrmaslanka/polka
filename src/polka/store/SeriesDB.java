@@ -34,6 +34,22 @@ public class SeriesDB {
 		
 
 	/**
+	 * Deletes a series
+	 * @param name series name
+	 * @throws NotFoundException this series already doesn't exist
+	 */
+	public void deleteSeries(String name) throws NotFoundException, IOException {
+		SeriesDefinition sd = null;
+		synchronized (this.refcount) {
+			sd = SeriesDefinitionDB.getInstance().getSeries(name);
+			if (sd == null) throw new NotFoundException();
+			sd.isDeleted = true;
+		}
+
+		this.redefineAsync(sd).lock();	
+	}
+	
+	/**
 	 * Returns a SeriesController for given series
 	 * @param name series name
 	 * @return SeriesController for this one

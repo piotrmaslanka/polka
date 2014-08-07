@@ -51,10 +51,8 @@ public class SeriesController implements Closeable {
 		this.series = SeriesDefinitionDB.getInstance().getSeries(name);
 		if (this.series == null) throw new NotFoundException();
 
-		LFDSeries series_for_wac;
 		try {
 			this.primary_storage = ConfigManager.get().storage.getSeries(name);
-			series_for_wac = ConfigManager.get().storage.getSeries(name);
 		} catch (LFDNotFoundException | LFDDamagedException e) {
 			// if there is a definition but not a LFD allocation then something's wrong
 			throw new IOException();

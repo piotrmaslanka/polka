@@ -1,5 +1,5 @@
 from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException
+from polkacon.exceptions import IOException, SeriesNotFoundException, IllegalArgumentException
 import struct
 
 class Read(BaseOrder):
@@ -28,9 +28,6 @@ class Read(BaseOrder):
                 self.is_completed = True
             elif buffer[0] == 2:
                 self.result = SeriesNotFoundException()            
-                self.is_completed = True
-            elif buffer[0] == 3:
-                self.result = DefinitionMismatchException()
                 self.is_completed = True
             elif buffer[0] == 4:
                 self.result = IllegalArgumentException()

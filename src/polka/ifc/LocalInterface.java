@@ -50,6 +50,19 @@ public class LocalInterface {
 		}
 		
 	}
+	
+	/**
+	 * Deletes target series
+	 * @param name name of target series
+	 * @throws SeriesNotFoundException if series doesnt exist
+	 */
+	public void deleteSeries(String name) throws IOException, SeriesNotFoundException {
+		try {
+			SeriesDB.getInstance().deleteSeries(name);
+		} catch (NotFoundException e) {
+			throw new SeriesNotFoundException();
+		}
+	}
 
 	/**
 	 * Gets target series' operational head (up to this head the series is readable).
@@ -59,9 +72,8 @@ public class LocalInterface {
 	 * @param name name of target series
 	 * @return series' head
 	 * @throws SeriesNotFoundException when a series does not exist (so it can't be provided)
-	 * @throws DefinitionMismatchException if generation doesn't match (and caller provided an older one)
 	 */
-	public long getHeadTimestamp(String name) throws IOException, SeriesNotFoundException, DefinitionMismatchException {
+	public long getHeadTimestamp(String name) throws IOException, SeriesNotFoundException {
 		SeriesController ctrl = null;
 		try {
 			ctrl = SeriesDB.getInstance().getSeries(name);
@@ -102,7 +114,7 @@ public class LocalInterface {
 	 * @param channel target channel
 	 */	
 	public void read(String name, long from, long to, WritableByteChannel channel)
-		throws IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException {
+		throws IOException, SeriesNotFoundException, IllegalArgumentException {
 		
 		SeriesController ctrl = null;
 		try {
@@ -157,8 +169,7 @@ public class LocalInterface {
 	 * @param channel target channel
 	 */
 	public void readHead(String name, WritableByteChannel channel)
-			throws IOException, SeriesNotFoundException,
-			DefinitionMismatchException {
+			throws IOException, SeriesNotFoundException {
 
 		SeriesController ctrl = null;
 		try {

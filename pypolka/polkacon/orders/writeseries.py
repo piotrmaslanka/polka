@@ -1,5 +1,5 @@
 from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException
+from polkacon.exceptions import IOException, SeriesNotFoundException, IllegalArgumentException
 import struct
 
 class WriteSeries(BaseOrder):
@@ -16,9 +16,7 @@ class WriteSeries(BaseOrder):
         if buffer[0] == 1:
             self.result = IOException()
         elif buffer[0] == 2:
-            self.result = SeriesNotFoundException()            
-        elif buffer[0] == 3:
-            self.result = DefinitionMismatchException()
+            self.result = SeriesNotFoundException()
         elif buffer[0] == 4:
             self.result = IllegalArgumentException()
 

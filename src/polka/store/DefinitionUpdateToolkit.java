@@ -36,7 +36,8 @@ final public class DefinitionUpdateToolkit {
 		} else {
 			// Does current series physical data need to be wiped?
 			if (sd.recordSize != this.sd.recordSize) performDeletion = true;
-			if (sd.options != this.sd.options) performDeletion = true;			
+			if (sd.options != this.sd.options) performDeletion = true;
+			if (sd.isDeleted) performDeletion = true;
 		}
 				
 		// Apply operations...

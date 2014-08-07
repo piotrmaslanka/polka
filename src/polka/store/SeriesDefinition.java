@@ -36,6 +36,11 @@ public class SeriesDefinition implements Serializable {
 	public String options;
 	
 	/**
+	 * Used for deleting series 
+	 */
+	public transient boolean isDeleted = false;
+	
+	/**
 	 * Timestamp at which the series was deleted.
 	 * 
 	 * 0 if this has not yet been deleted

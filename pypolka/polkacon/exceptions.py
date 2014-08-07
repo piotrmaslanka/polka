@@ -7,8 +7,5 @@ class IOException(PolkaException):
 class SeriesNotFoundException(PolkaException):
     pass
 
-class DefinitionMismatchException(PolkaException):
-    pass
-
 class IllegalArgumentException(PolkaException):
     pass

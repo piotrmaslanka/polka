@@ -5,6 +5,7 @@ from polkacon.orders.updatedefinition import UpdateDefinition
 from polkacon.orders.writeseries import WriteSeries
 from polkacon.orders.read import Read
 from polkacon.orders.readhead import ReadHead
+from polkacon.orders.deleteseries import DeleteSeries
 
 class PolkaInterface(object):
     def __init__(self, addresses, autoexecute=True):
@@ -128,6 +129,9 @@ class PolkaInterface(object):
             return self.get()                
         
     # Helper operations
+    
+    def deleteSeries(self, name):
+        return self._addOrder(DeleteSeries(name))
     
     def writeSeries(self, name, cur_timestamp, data):
         return self._addOrder(WriteSeries(name, cur_timestamp, data))
