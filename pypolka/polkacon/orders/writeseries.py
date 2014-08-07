@@ -1,16 +1,16 @@
-from zerocon.orders import BaseOrder
-from zerocon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException
+from polkacon.orders import BaseOrder
+from polkacon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException
 import struct
 
 class WriteSeries(BaseOrder):
-    def __init__(self, name, prev_timestamp, cur_timestamp, data):
+    def __init__(self, name, cur_timestamp, data):
         BaseOrder.__init__(self)
         self.name = name
         self.cur_timestamp = cur_timestamp
         self.data = data
 
     def __str__(self):
-        return '\x03' + struct.pack('>h', len(self.name)) + self.name + struct.pack('>qqi', self.prev_timestamp, self.cur_timestamp, len(self.data)) + self.data
+        return '\x03' + struct.pack('>h', len(self.name)) + self.name + struct.pack('>qi', self.cur_timestamp, len(self.data)) + self.data
         
     def on_data(self, buffer):
         if buffer[0] == 1:

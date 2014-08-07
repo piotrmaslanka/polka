@@ -1,6 +1,6 @@
-from zerocon.orders import BaseOrder
-from zerocon.exceptions import IOException
-from zerocon.seriesdefinition import SeriesDefinition
+from polkacon.orders import BaseOrder
+from polkacon.exceptions import IOException
+from polkacon.seriesdefinition import SeriesDefinition
 import struct
 
 class GetDefinition(BaseOrder):
@@ -9,7 +9,10 @@ class GetDefinition(BaseOrder):
         self.name = name
 
     def __str__(self):
-        return '\x00'+struct.pack('>H', len(self.name)) + self.name
+        return '\x00'+struct.pack('>h', len(self.name)) + self.name
+        
+    def copy(self):
+        return GetDefinition(self.name)
         
     def on_data(self, buffer):
         if buffer[0] == 1:
@@ -26,4 +29,5 @@ class GetDefinition(BaseOrder):
             else:
                 del buffer[:1+sd._lengthInBytes()]
                 
+            self.result = sd
         self.is_completed = True

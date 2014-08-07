@@ -1,5 +1,5 @@
-from zerocon.orders import BaseOrder
-from zerocon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException
+from polkacon.orders import BaseOrder
+from polkacon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException
 import struct
 
 class GetHeadTimestamp(BaseOrder):

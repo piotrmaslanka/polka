@@ -1,13 +1,14 @@
-from zerocon.orders import BaseOrder
-from zerocon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException
+from polkacon.orders import BaseOrder
+from polkacon.exceptions import IOException, SeriesNotFoundException, DefinitionMismatchException, IllegalArgumentException
 import struct
 
 class Read(BaseOrder):
-    def __init__(self, name, from_, to):
+    def __init__(self, name, from_, to, recordsize):
         BaseOrder.__init__(self)
         self.name = name
         self.from_ = from_
         self.to = to
+        self.recordsize = recordsize
         
         self.data = None    # if list means header was readed in
 
@@ -52,11 +53,11 @@ class Read(BaseOrder):
                     return
                 else:
                     # record to be read inside!
-                    if len(buffer) < 8+self.sd.recordsize:
+                    if len(buffer) < 8+self.recordsize:
                         return # not yet ready
-                    data = buffer[8:8+self.sd.recordsize]
-                    del buffer[:8+self.sd.recordsize]
+                    data = buffer[8:8+self.recordsize]
+                    del buffer[:8+self.recordsize]
                     self.data.append((ts, data))
 
     def copy(self):
-        return Read(self.name, self.from_, self.to)
+        return Read(self.name, self.from_, self.to, self.recordsize)

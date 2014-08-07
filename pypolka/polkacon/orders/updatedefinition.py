@@ -1,5 +1,5 @@
-from zerocon.orders import BaseOrder
-from zerocon.exceptions import IOException
+from polkacon.orders import BaseOrder
+from polkacon.exceptions import IOException
 
 class UpdateDefinition(BaseOrder):
     def __init__(self, sd):

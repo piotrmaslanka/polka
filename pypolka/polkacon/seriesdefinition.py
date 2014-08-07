@@ -2,7 +2,7 @@ import struct
 
 class SeriesDefinition(object):
     
-    def __init__(self, seriesname, replicacount, generation, autotrim, recordsize, options, tombstonedon):
+    def __init__(self, seriesname, autotrim, recordsize, options):
         self._seriesname = seriesname
         self._autotrim = autotrim
         self._recordsize = recordsize
@@ -57,10 +57,10 @@ class SeriesDefinition(object):
     
     @staticmethod
     def fromINTP(dat):
-        recs, autr, lenopt = struct.unpack('>iqh', dat[:34])
-        options = dat[34:34+lenopt]
-        lennam, = struct.unpack('>h', dat[34+lenopt:34+lenopt+2])
-        nam = dat[34+lenopt+2:34+lenopt+2+lennam]
+        recs, autr, lenopt = struct.unpack('>iqh', dat[:14])
+        options = dat[14:14+lenopt]
+        lennam, = struct.unpack('>h', dat[14+lenopt:14+lenopt+2])
+        nam = dat[14+lenopt+2:14+lenopt+2+lennam]
         if len(nam) != lennam: 
             raise Exception
         return SeriesDefinition(nam, autr, recs, options)

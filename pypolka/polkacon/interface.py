@@ -132,11 +132,11 @@ class PolkaInterface(object):
     def writeSeries(self, name, cur_timestamp, data):
         return self._addOrder(WriteSeries(name, cur_timestamp, data))
               
-    def read(self, name, from_, to):
-        return self._addOrder(Read(name, from_, to))
+    def read(self, name, from_, to, recordsize):
+        return self._addOrder(Read(name, from_, to, recordsize))
         
-    def readHead(self, name):
-        return self._addOrder(ReadHead(name))
+    def readHead(self, name, recordsize):
+        return self._addOrder(ReadHead(name, recordsize))
         
     def getDefinition(self, name):
         return self._addOrder(GetDefinition(name))
