@@ -3,8 +3,6 @@ package polka.store;
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-
 import polka.lfds.LFDDamagedException;
 import polka.lfds.LFDNotFoundException;
 import polka.lfds.LFDOpenedException;

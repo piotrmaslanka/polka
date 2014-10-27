@@ -2,8 +2,6 @@ package polka.store;
 
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-
 import polka.lfds.LFDAlreadyExistsException;
 import polka.lfds.LFDNotFoundException;
 import polka.lfds.LFDOpenedException;

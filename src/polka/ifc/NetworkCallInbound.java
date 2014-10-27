@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.nio.channels.SocketChannel;
 
 import polka.store.SeriesDefinition;
-import polka.store.SeriesDefinitionDB;
 import polka.util.WorkUnit;
 
 /**
