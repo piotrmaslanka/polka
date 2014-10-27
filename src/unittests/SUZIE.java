@@ -14,7 +14,7 @@ import org.junit.Test;
 import polka.lfds.LFDDriver;
 import polka.lfds.LFDResultSet;
 import polka.lfds.LFDSeries;
-import polka.lfds.suzie.SUZIEDriver;
+import polka.lfds.zuzie.ZUZIEDriver;
 
 /**
  * A general LFD conformance test. Use all LFDs you might want there!
@@ -28,7 +28,7 @@ public class SUZIE {
 			Files.createDirectory(Paths.get("test"));
 		} catch (IOException e) {
 		}
-		this.driver = new SUZIEDriver("test");
+		this.driver = new ZUZIEDriver("test");
 	}
 
 	@After

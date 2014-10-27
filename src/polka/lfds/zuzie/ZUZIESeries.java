@@ -1,4 +1,4 @@
-package polka.lfds.suzie;
+package polka.lfds.zuzie;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,9 +22,9 @@ import polka.lfds.LFDSeries;
  * Honestly, close() does nothing here except telling driver about it.
  * It's drivers responsibility to clean-up
  */
-public class SUZIESeries implements LFDSeries {
+public class ZUZIESeries implements LFDSeries {
 
-	final private SUZIEDriver driver;
+	final private ZUZIEDriver driver;
 	final private Path seriespath;
 	final private String name;
 	final private int recsize;
@@ -58,7 +58,13 @@ public class SUZIESeries implements LFDSeries {
 	
 	private AtomicInteger open_resultsets = new AtomicInteger(0);
 	
-	public SUZIESeries(SUZIEDriver driver, String name, int recsize, String options) throws IOException, IllegalArgumentException {
+	
+	/**
+	 * Name of the file that is leading the writes
+	 */
+	private long leadfile_name;
+	
+	public ZUZIESeries(ZUZIEDriver driver, String name, int recsize, String options) throws IOException, IllegalArgumentException {
 		this.name = name;
 		this.driver = driver;
 		this.recsize = recsize;
@@ -75,6 +81,7 @@ public class SUZIESeries implements LFDSeries {
 		ds.close();
 		
 		this.leadfile = this.seriespath.resolve(new Long(maximum).toString());
+		this.leadfile_name = maximum;
 		this.records_in_lead = (int)(Files.size(this.leadfile) / (8 + this.recsize));	
 		
 		// Get HEAD
@@ -162,7 +169,7 @@ public class SUZIESeries implements LFDSeries {
 		
 		this.open_resultsets.incrementAndGet();
 		
-		return new SUZIEResultSet(this, from, to, filetab, this.seriespath, this.recsize);
+		return new ZUZIEResultSet(this, from, to, filetab, this.seriespath, this.recsize);
 	}
 
 	@Override
@@ -181,10 +188,12 @@ public class SUZIESeries implements LFDSeries {
 		
 		// Check whether leadfile requires a split
 		if (this.records_in_lead >= this.slabsize) {
+			
 			// split is required
 			this.closeLeadfile();
+			this.leadfile_name = timestamp;
 			this.leadfile = this.seriespath.resolve(new Long(timestamp).toString());
-
+			
 			this.leadfile_output = FileChannel.open(this.leadfile, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
 
 			this.records_in_lead = 0;
@@ -280,8 +289,7 @@ public class SUZIESeries implements LFDSeries {
 					Files.delete(this.seriespath.resolve(new Long(s).toString()));
 				else
 					sweep_mode_engaged = true;
-		}
-		
+		}		
 		
 		this.trim_time = null;
 		this.trim_in_progress = false;

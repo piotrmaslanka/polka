@@ -1,4 +1,4 @@
-package polka.lfds.suzie;
+package polka.lfds.zuzie;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,7 +13,7 @@ import polka.lfds.LFDResultSet;
  *
  * Optimization idea: use direct ByteBuffers, allocated at construction, to do seeks for locate
  */
-public class SUZIEResultSet implements LFDResultSet {
+public class ZUZIEResultSet implements LFDResultSet {
 	
 	// Basic data about the set
 	private long from;
@@ -22,17 +22,18 @@ public class SUZIEResultSet implements LFDResultSet {
 
 	// Data access info
 	private long[] blocks;
+
 	private int seqptr = -1;	// pointer for entry in blocks
 	private FileChannel cfile;	// currently readed file
 	private long records_remaining;	// records remaining in this file
 	
 	// General management and bookkeeping
-	private SUZIESeries series;
+	private ZUZIESeries series;
 	private Path seriespath;
 	
 	private ByteBuffer timestamp_buffer = ByteBuffer.allocateDirect(8);
 	
-	public SUZIEResultSet(SUZIESeries series, long from, long to, long[] blocks, Path seriespath, int recsize) {
+	public ZUZIEResultSet(ZUZIESeries series, long from, long to, long[] blocks, Path seriespath, int recsize) {
 		this.series = series;
 		this.from = from;
 		this.to = to;

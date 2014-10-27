@@ -1,4 +1,4 @@
-package polka.lfds.suzie;
+package polka.lfds.zuzie;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -25,22 +25,25 @@ import polka.lfds.LFDSeries;
  * For sure it could be optimized further, but now it's neither the time nor the place
  * to do so.
  * 
+ * It compresses old slabs. Make sure that slabsize is enough for a slab to comfortably
+ * fit in memory!
+ * 
  * Following options are accepted ( ; separates )
  * 
  * 		slabsize=10000			-		size of single data file in records
  * 
  * Optimization idea 1: Series should cache their list of data files
  */
-public class SUZIEDriver implements LFDDriver {
+public class ZUZIEDriver implements LFDDriver {
 	protected Path base_directory;
-	private HashMap<String, SUZIESeries> series = new HashMap<>();
+	private HashMap<String, ZUZIESeries> series = new HashMap<>();
 	private HashMap<String, Integer> series_refcount = new HashMap<>();
 	
-	public SUZIEDriver(String path) {
+	public ZUZIEDriver(String path) {
 		this.base_directory = Paths.get(path);
 	}
 	
-	public SUZIEDriver(Path path) {
+	public ZUZIEDriver(Path path) {
 		this.base_directory = path;
 	}
 
@@ -87,7 +90,7 @@ public class SUZIEDriver implements LFDDriver {
 		}
 		options = FileUtils.readFileToString(target_directory.resolve("options").toFile(), utf8);		
 		
-		SUZIESeries s = new SUZIESeries(this, name, recsize, options);
+		ZUZIESeries s = new ZUZIESeries(this, name, recsize, options);
 		series.put(name, s);
 		series_refcount.put(name, 1);
 		return s;
@@ -181,7 +184,7 @@ public class SUZIEDriver implements LFDDriver {
 	/**
 	 * Returns all series registered in this driver
 	 * 
-	 * This is SUZIE-specific
+	 * This is ZUZIE-specific
 	 * 
 	 * @return list of series in this driver
 	 */
