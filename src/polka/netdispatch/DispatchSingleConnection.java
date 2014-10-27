@@ -30,7 +30,6 @@ public class DispatchSingleConnection extends WorkUnit {
 		try {
 			this.runLogic();
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

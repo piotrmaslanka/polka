@@ -14,35 +14,15 @@ import polka.startup.ConfigManager;
  *
  */
 public class DispatcherThread extends Thread {
-	
-	final private boolean isUNIXdomain;
-	
+
 	public void terminate() {
 		this.interrupt();
 	}
-	
-	public DispatcherThread(boolean isUNIXDomain) {
-		this.isUNIXdomain = isUNIXDomain;
-	}
-	public DispatcherThread() { this.isUNIXdomain = false; }
-	
+		
 	public void runLogic() throws IOException {
 		ServerSocketChannel sc;
-		if (!this.isUNIXdomain) {
-			sc = ServerSocketChannel.open();
-			sc.bind(ConfigManager.get().node_interface);
-		} else {
-			File socketFile = new File(ConfigManager.get().unix_socket_name);
-			socketFile.delete();
-			
-			// TODO: implement this!
-			return;
-			/**
-			socketFile = new File(ConfigManager.get().unix_socket_name);
-			AFUNIXServerSocket sock = AFUNIXServerSocket.newInstance();
-			sock.bind(new AFUNIXSocketAddress(socketFile));
-			sc = sock.getChannel();**/
-		}
+		sc = ServerSocketChannel.open();
+		sc.bind(ConfigManager.get().node_interface);
 		
 		while (!Thread.interrupted())
 			new DispatchSingleConnection(sc.accept()).executeAsThread();
@@ -52,10 +32,7 @@ public class DispatcherThread extends Thread {
 	public void run() {
 		try {
 			this.runLogic();
-		} catch (ClosedByInterruptException e) {}
-		  catch (IOException e) {
-			  e.printStackTrace();
-		  }
+		} catch (IOException e) {}
 	}
 
 }

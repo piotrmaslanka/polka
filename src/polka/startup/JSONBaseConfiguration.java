@@ -11,13 +11,7 @@ public class JSONBaseConfiguration {
 	public String node_ip;
 	/** Port of this node's interface */
 	public Integer node_port;
-	
-	
-	/** Path to UNIX socket Zero should listen on
-	 * null if UNIX socket should not be initialized
-	 */
-	public String unix_socket_name = null;
-	
+		
 	/**
 	 * Directory in which series data will be stored
 	 */

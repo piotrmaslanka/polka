@@ -17,11 +17,6 @@ public class BaseConfiguration {
 	public InetSocketAddress node_interface;
 	
 	/**
-	 * UNIX socket name to listen on, null if none
-	 */
-	public String unix_socket_name;
-	
-	/**
 	 * Directory in which time series data should be stored
 	 */
 	public Path datapath;

@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 
-import polka.lfds.suzie.SUZIEDriver;
+import polka.lfds.zuzie.ZUZIEDriver;
 
 import com.google.gson.Gson;
 
@@ -46,12 +46,11 @@ public class ConfigManager {
 		
 		b.node_interface = new InetSocketAddress(bc.node_ip, bc.node_port);
 		
-		b.unix_socket_name = bc.unix_socket_name;
 		b.series_in_memory = bc.series_in_memory;
 		b.datapath = Paths.get(bc.seriesdata_path);
 		b.metapath = Paths.get(bc.seriesmeta_path);
 		
-		b.storage = new SUZIEDriver(b.datapath);
+		b.storage = new ZUZIEDriver(b.datapath);
 		
 		ConfigManager.instance = b;
 	}
