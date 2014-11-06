@@ -9,9 +9,6 @@ import polka.util.WorkUnit;
 /**
  * Analyzes a connection and transitions to other WorkUnit to 
  * perform some work on it later
- * 
- * @author Henrietta
- *
  */
 public class DispatchSingleConnection extends WorkUnit {
 

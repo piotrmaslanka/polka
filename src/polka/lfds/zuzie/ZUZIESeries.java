@@ -29,6 +29,7 @@ public class ZUZIESeries implements LFDSeries {
 	final private String name;
 	final private int recsize;
 	private long head;
+	private byte[] headValue;
 	/**
 	 * The file that will receive the write.
 	 * 
@@ -83,15 +84,17 @@ public class ZUZIESeries implements LFDSeries {
 		this.leadfile = this.seriespath.resolve(new Long(maximum).toString());
 		this.leadfile_name = maximum;
 		this.records_in_lead = (int)(Files.size(this.leadfile) / (8 + this.recsize));	
-		
+		this.headValue = new byte[this.recsize];
+
 		// Get HEAD
 		FileChannel fc = FileChannel.open(this.leadfile, StandardOpenOption.READ);
 		if (fc.size() > 0) {
 			fc.position(fc.size()-8-this.recsize);
-			ByteBuffer bc = ByteBuffer.allocate(8);
+			ByteBuffer bc = ByteBuffer.allocate(8+this.recsize);
 			fc.read(bc);
 			bc.flip();
 			this.head = bc.getLong();
+			bc.get(this.headValue);
 		} else
 			this.head = -1;
 		
@@ -120,6 +123,13 @@ public class ZUZIESeries implements LFDSeries {
 	public String getName() {
 		return this.name;
 	}
+	
+	@Override
+	public LFDResultSet getHead() throws IOException, LFDDamagedException {
+		// a ZUZIEHead does not count towards open result sets
+		return new ZUZIEHead(this.head, this.headValue, this.recsize);
+	}
+	
 
 	@Override
 	public LFDResultSet read(long from, long to) throws IOException, LFDDamagedException {
@@ -213,7 +223,8 @@ public class ZUZIESeries implements LFDSeries {
 		
 		this.records_in_lead++;
 		this.head = timestamp;
-		
+		this.headValue = data.clone();
+				
 		if (split_occurred) this.executeTrim();
 	}}
 

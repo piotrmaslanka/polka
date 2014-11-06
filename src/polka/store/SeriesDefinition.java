@@ -12,7 +12,7 @@ import polka.store.SeriesDefinition;
  *
  */
 public class SeriesDefinition implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	/**
 	 * Name of the series
@@ -36,6 +36,11 @@ public class SeriesDefinition implements Serializable {
 	public String options;
 	
 	/**
+	 * Client-defined metadata
+	 */
+	public String metadata;
+	
+	/**
 	 * Used for deleting series 
 	 */
 	public transient boolean isDeleted = false;
@@ -45,11 +50,12 @@ public class SeriesDefinition implements Serializable {
 	 * 
 	 * 0 if this has not yet been deleted
 	 */
-	public SeriesDefinition(String name, int recordSize, String options) {
+	public SeriesDefinition(String name, int recordSize, String options, String metadata) {
 		this.seriesName = name;
 		this.recordSize = recordSize;
 		this.options = options;
 		this.autoTrim = 0;
+		this.metadata = metadata;
 	}
 	
 	// ------------------------------------ INTP representation
@@ -58,6 +64,7 @@ public class SeriesDefinition implements Serializable {
 		dos.writeLong(autoTrim);
 		dos.writeUTF(options);
 		dos.writeUTF(seriesName);
+		dos.writeUTF(metadata);
 	}
 	
 	public static SeriesDefinition fromDataStreamasINTPRepresentation(DataInputStream dis) throws IOException {
@@ -65,8 +72,9 @@ public class SeriesDefinition implements Serializable {
 		long autotrim = dis.readLong();
 		String options = dis.readUTF();
 		String seriesName = dis.readUTF();
+		String metadata = dis.readUTF();
 		
-		SeriesDefinition nd = new SeriesDefinition(seriesName, recordSize, options);
+		SeriesDefinition nd = new SeriesDefinition(seriesName, recordSize, options, metadata);
 		nd.autoTrim = autotrim;
 		return nd;
 	}		

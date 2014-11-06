@@ -27,4 +27,6 @@ public class JSONBaseConfiguration {
 	 */
 	public int series_in_memory;
 	
+	/*
+	
 }

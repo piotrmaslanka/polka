@@ -85,6 +85,15 @@ public class SeriesController implements Closeable {
 		}
 	}
 	
+	/** Reads head from series **/
+	public LFDResultSet readHead() throws IOException {
+		try {
+			return this.primary_storage.getHead();
+		} catch (LFDDamagedException e) {
+			throw new IOException();
+		}
+	}
+		
 	/**
 	 * Signals that this SeriesController is no longer used by the one that 
 	 * got it from SeriesDB 

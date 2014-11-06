@@ -51,6 +51,15 @@ public interface LFDSeries {
 	 */
 	public long getHeadTimestamp();
 	
+	
+	/**
+	 * Returns a result set with only the HEAD value. This will frequently be cached
+	 * by LFD's
+	 * 
+	 * @return a result set with only the HEAD value
+	 */
+	public LFDResultSet getHead() throws IOException, LFDDamagedException;
+	
 	/**
 	 * Writes a next position into the series
 	 * @param timestamp Timestamp of write

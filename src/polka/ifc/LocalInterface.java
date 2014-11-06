@@ -31,9 +31,8 @@ public class LocalInterface {
 	 * @param data data to write
 	 * @throws IllegalArgumentException timestamps invalid or invalid data
 	 * @throws SeriesNotFoundException when a series does not exist (and write was pointless because of that)
-	 * @throws DefinitionMismatchException if generation doesn't match (and caller provided an older one)
 	 */
-	public void writeSeries(String name, long cur_timestamp, byte[] data) throws IOException, SeriesNotFoundException, IllegalArgumentException, DefinitionMismatchException {
+	public void writeSeries(String name, long cur_timestamp, byte[] data) throws IOException, SeriesNotFoundException, IllegalArgumentException {
 		SeriesController ctrl = null;
 		try {
 			ctrl = SeriesDB.getInstance().getSeries(name);
@@ -156,7 +155,6 @@ public class LocalInterface {
 
 	public void close() throws IOException {}
 
-
 	/**
 	 * Gets target series' operational head and included data.
 	 * Think of it as a read() that returns only data specified by getHeadTimestamp()
@@ -181,22 +179,16 @@ public class LocalInterface {
 		try {
 			LFDResultSet rs = null;
 			try {
-				long head = ctrl.getHeadTimestamp();
-				rs = ctrl.read(head, Long.MAX_VALUE);
-				// allocate buffers for 1 entry
-				ByteBuffer bb = ByteBuffer.allocateDirect(ctrl.getSeriesDefinition().recordSize+8);
+				rs = ctrl.readHead();
+				// allocate buffers for 1 entry plus "-1"
+				ByteBuffer bb = ByteBuffer.allocateDirect(ctrl.getSeriesDefinition().recordSize+16);
 				
-				if (head != -1) {
-					try {
-						rs.fetch(bb, 1);
-					} catch (LFDDamagedException e) {
-						throw new IOException();
-					}
-					bb.flip();
-					channel.write(bb);
+				try {
+					rs.fetch(bb, 1);
+				} catch (LFDDamagedException e) {
+					throw new IOException();
 				}
 				
-				bb.clear();
 				bb.putLong(-1);
 				bb.flip();
 				channel.write(bb);
