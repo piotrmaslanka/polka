@@ -2,13 +2,14 @@ import struct
 
 class SeriesDefinition(object):
     
-    def __init__(self, seriesname, autotrim, recordsize, options):
+    def __init__(self, seriesname, recordsize, autotrim=0, options='', meta=''):
         self._seriesname = seriesname
         self._autotrim = autotrim
         self._recordsize = recordsize
         self._options = options
         
         self._intp = None
+        self._meta = None
         
     @property
     def seriesname(self):
@@ -35,6 +36,14 @@ class SeriesDefinition(object):
         self._intp = None        
         
     @property
+    def meta(self):    
+        return self._meta
+    @meta.setter
+    def meta(self, value):
+        self._meta = value
+        self._intp = None
+        
+    @property
     def autotrim(self):
         return self._autotrim
     @autotrim.setter
@@ -45,7 +54,8 @@ class SeriesDefinition(object):
     def __precompileINTP(self):
         a = struct.pack('>iqh', self._recordsize, self._autotrim, len(self._options))
         b = self._options + struct.pack('>h', len(self._seriesname)) + self._seriesname
-        self._intp = a+b
+        c = struct.pack('>h', len(self._meta)) + self._meta
+        self._intp = a+b+c
     
     def toINTP(self):
         if self._intp == None:
@@ -63,6 +73,12 @@ class SeriesDefinition(object):
         nam = dat[14+lenopt+2:14+lenopt+2+lennam]
         if len(nam) != lennam: 
             raise Exception
-        return SeriesDefinition(nam, autr, recs, options)
+
+        lenmet, = struct.unpack('>h', dat[14+lenopt+2+lennam:14+lenopt+2+lennam+2])
+        met = dat[14+lenopt+2+lennam+2:14+lenopt+2+lennam+2+lenmet]
+        if len(met) != lenmet: 
+            raise Exception        
+        
+        return SeriesDefinition(nam, recs, autr, options, met)
 
     
