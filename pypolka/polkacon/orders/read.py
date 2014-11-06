@@ -10,7 +10,7 @@ class Read(BaseOrder):
         self.to = to
         self.recordsize = recordsize
         
-        self.data = None    # if list means header was readed in
+        self.data = []    # if list means header was readed in
 
     def __str__(self):
         return '\x04' + struct.pack('>h', len(self.name)) + self.name + struct.pack('>qq', self.from_, self.to)
@@ -19,42 +19,37 @@ class Read(BaseOrder):
         return self.data
         
     def on_data(self, buffer):        
-        if self.data == None:            
-            if buffer[0] == 0:
-                self.data = []
-                self.on_data(buffer)
-            elif buffer[0] == 1:
+        # This could be optimized more by postponing del buffer[..] but
+        # I'm too lazy to do it
+        while len(buffer) >= 8:
+            qpsk, = struct.unpack('>q', str(buffer[:8]))
+            
+            if qpsk > -1:
+                if len(buffer) < 8+self.recordsize: return
+                self.data.append((qpsk, buffer[:8+self.recordsize]))
+                del buffer[:8+self.recordsize]
+            elif qpsk == -1:
+                self.is_completed = True
+                return
+            elif qpsk == -2:
                 self.result = IOException()
                 self.is_completed = True
-            elif buffer[0] == 2:
-                self.result = SeriesNotFoundException()            
+                del buffer[0:8]
+                return
+            elif qpsk == -3:
+                self.result = SeriesNotFoundException()
                 self.is_completed = True
-            elif buffer[0] == 4:
+                del buffer[0:8]
+                return
+            elif qpsk == -4:
                 self.result = IllegalArgumentException()
                 self.is_completed = True
-
-            del buffer[0]
-        else:
-            # This could be optimized more by postponing del buffer[..] but
-            # I'm too lazy to do it
-            while True:
-                if len(buffer) < 8:
-                    return  # Not enough bits n bytes
-                
-                ts, = struct.unpack('>q', buffer[:8])
-                
-                if ts == -1:
-                    # end of read.
-                    self.is_completed = True
-                    del buffer[:8]
-                    return
-                else:
-                    # record to be read inside!
-                    if len(buffer) < 8+self.recordsize:
-                        return # not yet ready
-                    data = buffer[8:8+self.recordsize]
-                    del buffer[:8+self.recordsize]
-                    self.data.append((ts, data))
+                del buffer[0:8]
+                return
+            elif qpsk == -1:
+                self.is_completed = True
+                self.result = data
+                del buffer[0:8]
 
     def copy(self):
         return Read(self.name, self.from_, self.to, self.recordsize)

@@ -8,18 +8,16 @@ from polkacon.orders.readhead import ReadHead
 from polkacon.orders.deleteseries import DeleteSeries
 
 class PolkaInterface(object):
-    def __init__(self, addresses, autoexecute=True):
+    def __init__(self, address, autoexecute=True):
         """
         Initializes a polka interface
         
-        @param addresses: a sequence of addresses of Zero endpoints
-            an address is either a TCP socket of form: tuple(address, port)
-            or a string, describing UNIX domain socket
+        @param address: TCP socket address in form (host, port)
             
         @param autoexecute: if execute() needs to be called to process queries
         """
         
-        self.addresses = itertools.cycle(addresses)
+        self.address = address
         self.sock = None
         self.autoexecute = autoexecute
         self.orders = collections.deque()
@@ -68,17 +66,10 @@ class PolkaInterface(object):
             except:
                 pass
             
-            nextaddr = self.addresses.next()
-            
-            if isinstance(nextaddr, basestring):
-                af = socket.AF_UNIX
-            else:
-                af = socket.AF_INET
-            
-            sock = socket.socket(af, socket.SOCK_STREAM)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
                 sock.settimeout(10)
-                sock.connect(nextaddr)
+                sock.connect(self.address)
             except IOError:
                 self.sock = None
                 continue
@@ -127,6 +118,13 @@ class PolkaInterface(object):
         
         if self.autoexecute:
             return self.get()                
+        
+    def execute(self):
+        """Execute enqueued operations, returning a sequence of results"""
+        results = []
+        while len(self.orders) > 0:
+            results.append(self.get())
+        return results
         
     # Helper operations
     
