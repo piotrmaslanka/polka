@@ -1,6 +1,6 @@
-from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException, SeriesNotFoundException, IllegalArgumentException
 import struct
+from pypolka.orders import BaseOrder
+from pypolka.exceptions import IOException, SeriesNotFoundException, IllegalArgumentException
 
 class Read(BaseOrder):
     def __init__(self, name, from_, to, recordsize):

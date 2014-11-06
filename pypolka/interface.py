@@ -1,11 +1,11 @@
 import itertools, socket, collections
-from polkacon.orders.getdefinition import GetDefinition
-from polkacon.orders.getheadtimestamp import GetHeadTimestamp
-from polkacon.orders.updatedefinition import UpdateDefinition
-from polkacon.orders.writeseries import WriteSeries
-from polkacon.orders.read import Read
-from polkacon.orders.readhead import ReadHead
-from polkacon.orders.deleteseries import DeleteSeries
+from pypolka.orders.getdefinition import GetDefinition
+from pypolka.orders.getheadtimestamp import GetHeadTimestamp
+from pypolka.orders.updatedefinition import UpdateDefinition
+from pypolka.orders.writeseries import WriteSeries
+from pypolka.orders.read import Read
+from pypolka.orders.readhead import ReadHead
+from pypolka.orders.deleteseries import DeleteSeries
 
 class PolkaInterface(object):
     def __init__(self, address, autoexecute=True):

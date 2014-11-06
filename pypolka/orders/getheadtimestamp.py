@@ -1,5 +1,5 @@
-from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException, SeriesNotFoundException
+from pypolka.orders import BaseOrder
+from pypolka.exceptions import IOException, SeriesNotFoundException
 import struct
 
 class GetHeadTimestamp(BaseOrder):

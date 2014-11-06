@@ -1,5 +1,5 @@
-from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException
+from pypolka.orders import BaseOrder
+from pypolka.exceptions import IOException
 
 class UpdateDefinition(BaseOrder):
     def __init__(self, sd):

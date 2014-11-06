@@ -1,6 +1,6 @@
-from polkacon.orders import BaseOrder
-from polkacon.exceptions import IOException
-from polkacon.seriesdefinition import SeriesDefinition
+from pypolka.orders import BaseOrder
+from pypolka.exceptions import IOException
+from pypolka.seriesdefinition import SeriesDefinition
 import struct
 
 class GetDefinition(BaseOrder):
