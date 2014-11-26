@@ -128,23 +128,23 @@ class PolkaInterface(object):
         
     # Helper operations
     
-    def deleteSeries(self, name):
+    def delete_series(self, name):
         return self._addOrder(DeleteSeries(name))
     
-    def writeSeries(self, name, cur_timestamp, data):
+    def write_series(self, name, cur_timestamp, data):
         return self._addOrder(WriteSeries(name, cur_timestamp, data))
               
     def read(self, name, from_, to, recordsize):
         return self._addOrder(Read(name, from_, to, recordsize))
         
-    def readHead(self, name, recordsize):
+    def read_head(self, name, recordsize):
         return self._addOrder(ReadHead(name, recordsize))
         
-    def getDefinition(self, name):
+    def get_definition(self, name):
         return self._addOrder(GetDefinition(name))
         
-    def getHeadTimestamp(self, name):
+    def get_head_timestamp(self, name):
         return self._addOrder(GetHeadTimestamp(name))
         
-    def updateDefinition(self, sd):
+    def update_definition(self, sd):
         return self._addOrder(UpdateDefinition(sd))
