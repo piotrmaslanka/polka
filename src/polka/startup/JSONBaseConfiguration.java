@@ -26,7 +26,5 @@ public class JSONBaseConfiguration {
 	 * Amount of series to keep in memory at once
 	 */
 	public int series_in_memory;
-	
-	/*
-	
+
 }

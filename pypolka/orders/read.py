@@ -23,10 +23,9 @@ class Read(BaseOrder):
         # I'm too lazy to do it
         while len(buffer) >= 8:
             qpsk, = struct.unpack('>q', str(buffer[:8]))
-            
             if qpsk > -1:
                 if len(buffer) < 8+self.recordsize: return
-                self.data.append((qpsk, buffer[:8+self.recordsize]))
+                self.data.append((qpsk, buffer[8:8+self.recordsize]))
                 del buffer[:8+self.recordsize]
             elif qpsk == -1:
                 self.is_completed = True
