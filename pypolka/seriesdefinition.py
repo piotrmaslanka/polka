@@ -7,9 +7,9 @@ class SeriesDefinition(object):
         self._autotrim = autotrim
         self._recordsize = recordsize
         self._options = options
+        self._meta = meta
         
         self._intp = None
-        self._meta = None
         
     @property
     def seriesname(self):
