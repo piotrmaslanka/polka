@@ -106,15 +106,15 @@ class PolkaInterface(object):
                 
             
     def _addOrder(self, orderObject):
+        if self.sock == None:
+            self.__reconnect()
+
         self.orders.append(orderObject)
 
-        if self.sock == None:
+        try:
+            self.sock.send(str(orderObject))
+        except socket.error:
             self.__on_dc()
-        else:
-            try:
-                self.sock.send(str(orderObject))
-            except:
-                self.__on_dc()
         
         if self.autoexecute:
             return self.get()                
