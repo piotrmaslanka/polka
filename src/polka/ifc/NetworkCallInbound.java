@@ -7,24 +7,23 @@ import java.net.Socket;
 import java.nio.channels.SocketChannel;
 
 import polka.store.SeriesDefinition;
-import polka.util.WorkUnit;
 
 /**
  * work unit servicing an interface call
  *
  */
-public class NetworkCallInbound extends WorkUnit {
+public class NetworkCallInbound extends Thread {
 
 	private SocketChannel sc;
 	private LocalInterface ifc;
 	
 	public NetworkCallInbound(SocketChannel sc) {
+		super();
 		this.sc = sc;
 		this.ifc = new LocalInterface();
 	}
 	
-	@Override
-	public void run() throws IOException {
+	public void runCode() throws IOException {
 		Socket sc = this.sc.socket();
 		this.sc.configureBlocking(true);
 		sc.setSoTimeout(5000);
@@ -128,6 +127,14 @@ public class NetworkCallInbound extends WorkUnit {
 		} finally {
 			sc.close();
 			ifc.close();
+		}
+	}
+	
+	@Override
+	public void run() {
+		try {
+			this.runCode();
+		} catch (IOException e) {
 		}
 	}
 

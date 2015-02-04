@@ -3,6 +3,7 @@ package polka.netdispatch;
 import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
 
+import polka.ifc.NetworkCallInbound;
 import polka.startup.ConfigManager;
 
 /**
@@ -21,7 +22,7 @@ public class DispatcherThread extends Thread {
 		sc.bind(ConfigManager.get().node_interface);
 		
 		while (!Thread.interrupted())
-			new DispatchSingleConnection(sc.accept()).executeAsThread();
+			new NetworkCallInbound(sc.accept()).start();
 	}
 	
 	@Override
