@@ -5,4 +5,4 @@ Polka additionally supports auto-trim. This is automatic pruning of records olde
 
 The database is written in Java with a Python interface.
 
-Polka is a stripped-down version of my diploma thesis, that concerned distributed time series database. For licensing, see the attached file.
+Polka is a stripped-down version of my diploma thesis, that concerned distributed time series database. This fact is terribly obvious in the repository history. For licensing, see the attached file.
