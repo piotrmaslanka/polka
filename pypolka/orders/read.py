@@ -29,6 +29,8 @@ class Read(BaseOrder):
                 del buffer[:8+self.recordsize]
             elif qpsk == -1:
                 self.is_completed = True
+                self.result = self.data
+                del buffer[0:8]
                 return
             elif qpsk == -2:
                 self.result = IOException()
@@ -45,10 +47,6 @@ class Read(BaseOrder):
                 self.is_completed = True
                 del buffer[0:8]
                 return
-            elif qpsk == -1:
-                self.is_completed = True
-                self.result = data
-                del buffer[0:8]
 
     def copy(self):
         return Read(self.name, self.from_, self.to, self.recordsize)
